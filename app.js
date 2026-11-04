@@ -1,3 +1,45 @@
+/* ============ TRAFFIC HEURISTIC ENGINE ============ */
+// Base sa oras ng araw at araw ng linggo. Hindi ito live, pero mas accurate kaysa static.
+function getTrafficMultiplier(departureMinutes) {
+  const now = new Date();
+  const day = now.getDay(); // 0 = Sunday, 6 = Saturday
+  const hour = departureMinutes / 60;
+
+  // Weekend: mas magaan ang traffic
+  if (day === 0 || day === 6) {
+    if (hour >= 10 && hour < 20) return 1.15; // malls / gimik
+    return 0.9;
+  }
+
+  // Weekday rush hours (base sa MMDA observations)
+  if ((hour >= 7 && hour < 9) || (hour >= 17 && hour < 20)) {
+    return 1.55; // matinding traffic
+  }
+  if (hour >= 9 && hour < 12) return 1.25;
+  if (hour >= 12 && hour < 14) return 1.15; // lunch
+  if (hour >= 14 && hour < 17) return 1.2;
+  if (hour >= 20 && hour < 22) return 1.05;
+  return 0.85; // gabi / madaling araw
+}
+
+// I-apply sa bawat leg bago i-render
+function applyTrafficToRoute(route, departureMinutes) {
+  const mult = getTrafficMultiplier(departureMinutes);
+  let totalMin = 0;
+  route.legs.forEach(leg => {
+    // Ang rail ay hindi gaano apektado ng road traffic
+    const isRail = ["mrt3", "lrt1", "lrt2", "carousel"].includes(leg.m);
+    const factor = isRail ? 1.0 : mult; // rail = fixed, road = dynamic
+    leg.min = Math.round(leg.min * factor);
+    totalMin += leg.min;
+  });
+  // Transfer walk time (6 min per transfer) — apektado rin ng traffic kung lalakad sa labas
+  const transferTime = (route.legs.length - 1) * Math.round(6 * mult);
+  route.min = totalMin + transferTime;
+  route.trafficMultiplier = mult; // i-save para ma-display
+  return route;
+}
+
 /* ============ FULL METRO MANILA DATA ============ */
 const Hubs = [
 ["north","SM North EDSA","Quezon City",14.6563,121.0306],["cubao","Cubao","Quezon City",14.62,121.053],
@@ -152,6 +194,7 @@ function setupSearch(inputId, resId, hiddenId, defaultText) {
         input.value = m.name + ", " + m.city;
         hidden.value = m.id;
         res.classList.remove("on");
+        redo(); // Auto-refresh ETA kapag nagpalit ng lugar
       };
       res.appendChild(div);
     });
@@ -192,7 +235,8 @@ const I18N={
   back:"‹ Mga ruta",save:"☆ I-save",saved:"★ Saved",next:"TAPOS NA ANG STEP ",done:"TAPOS NA! 🎉",step:"Step",sameErr:"Pareho ang pinanggalingan at pupuntahan. Pumili ng ibang lugar. 😅",
   noRoute:"Wala pang ruta para dito sa ngayon. Subukan ang kalapit na istasyon o terminal. 🚏",emptyFav:"Wala pang naka-save. Hanapin ang ruta at pindutin ang ☆ I-save. 🚏",
   viewBtn:"Tingnan",guideTitle:"Biyahe Guide: ",estimate:"Estimate lang ang oras at pamasahe. Built-in na datos ito para sa Metro Manila, hindi live na galing sa Google Maps.",locSearch:"Hinahanap ang location mo...",locNearest:"Pinakamalapit na lugar sa iyo: ",locFail:"Hindi makuha ang location. Paki-allow ang location permission.",locNo:"Hindi supported ang location sa device na ito.",
-  people:"lugar sa ",citiesWord:" lungsod at bayan — may detalyadong sub-location na ang Pasig, Taguig, Caloocan, Makati at iba pa."
+  people:"lugar sa ",citiesWord:" lungsod at bayan — may detalyadong sub-location na ang Pasig, Taguig, Caloocan, Makati at iba pa.",
+  trafficHigh:"Mabigat ang traffic sa oras na ito (×1.55).",trafficMid:"Katamtaman ang traffic (×1.25).",trafficLow:"Magaan ang traffic (×0.9).",trafficLabel:"Traffic factor"
  },
  en:{
   heroH1:"Beep beep! 🚐<br>Where are you now?",heroP:"Plan your Metro Manila commute using jeepneys, buses, MRT, LRT and walking. Clear steps, estimated fare and time.",
@@ -206,7 +250,8 @@ const I18N={
   travelTime:"TRAVEL TIME",pamasahe:"FARE",transferLbl:"TRANSFER",openGM:"Open in Google Maps ↗",mapTitle:"🗺️ Live Trip Map",mapTitleHome:"🗺️ Metro Manila Map",popular:"Popular routes",popularNote:"Tap to try instantly, or enter your own trip above.",tapMsg:"Tap the origin, then the destination.",tapFrom:"From: ",tapNext:". Now pick the destination.",
   back:"‹ Routes",save:"☆ Save",saved:"★ Saved",next:"STEP DONE ",done:"ALL DONE! 🎉",step:"Step",sameErr:"Start and destination are the same. Pick a different place. 😅",noRoute:"No route found yet. Try a nearby station or terminal. 🚏",emptyFav:"Nothing saved yet. Find a route and tap ☆ Save. 🚏",
   viewBtn:"View",guideTitle:"Trip Guide: ",estimate:"Time and fare are estimates. Built-in data for Metro Manila, not live from Google Maps.",locSearch:"Finding your location...",locNearest:"Nearest place to you: ",locFail:"Cannot get location. Please allow location permission.",locNo:"Location not supported on this device.",
-  people:" places across ",citiesWord:" cities and municipalities — Pasig, Taguig, Caloocan, Makati and more now have detailed sub-locations."
+  people:" places across ",citiesWord:" cities and municipalities — Pasig, Taguig, Caloocan, Makati and more now have detailed sub-locations.",
+  trafficHigh:"Heavy traffic at this hour (×1.55).",trafficMid:"Moderate traffic (×1.25).",trafficLow:"Light traffic (×0.9).",trafficLabel:"Traffic factor"
  }
 };
 const T=k=>I18N[LANG][k]||I18N.fil[k]||k;
@@ -261,12 +306,14 @@ function dijkstraFrom(a,b,costFn){
  const path=[];let c=b;while(prev[c]){path.unshift({from:prev[c].from,to:c,e:prev[c].e});c=prev[c].from}return path;
 }
 
-function find(a,b){
+function find(a,b,depMinutes){
  const fastest=dijkstraFrom(a,b,e=>e[3]),cheapest=dijkstraFrom(a,b,e=>e[4]),fewest=dijkstraFrom(a,b,e=>1+(rail(e[2])?0:0.1));
  const assemble=(path)=>{
-  if(!path)return null;const legs=build(path);let min=legs.reduce((s,l)=>s+l.min,0)+(legs.length-1)*6;if(rush)min=Math.round(min*1.4);
+  if(!path)return null;const legs=build(path);let min=legs.reduce((s,l)=>s+l.min,0)+(legs.length-1)*6;
   let fare=legs.reduce((s,l)=>s+l.fare,0);if(disc)fare=Math.round(fare*.8);
-  return{legs,min,fare,x:legs.length-1,path,sig:legs.map(l=>l.m+l.to).join()};
+  const route = {legs,min,fare,x:legs.length-1,path,sig:legs.map(l=>l.m+l.to).join()};
+  // I-apply ang traffic multiplier base sa oras ng alis
+  return applyTrafficToRoute(route, depMinutes);
  };
  const results=[],seen=new Set();const add=(path,tag)=>{const r=assemble(path);if(!r||seen.has(r.sig))return;seen.add(r.sig);results.push({r,tags:[tag]})};
  add(fastest,T("fastest"));add(cheapest,T("cheapest"));add(fewest,T("fewest"));
@@ -277,6 +324,8 @@ function find(a,b){
    if(l1&&l2){const merged=[...l1,...l2];const r=assemble(merged);if(r&&!seen.has(r.sig)){seen.add(r.sig);results.push({r,tags:[T("via")+P[h]]})}}
   }
  }
+ // I-sort base sa dynamic na min
+ results.sort((a,b)=>a.r.min - b.r.min);
  return results;
 }
 
@@ -306,18 +355,21 @@ function render(){
  const a=$("#from-val").value, b=$("#to-val").value;
  const box=$("#results");ctx={a,b};
  if(a===b){box.innerHTML='<div class="card empty">'+T("sameErr")+'</div>';return}
- const rs=find(a,b);
+ const depM = t0();
+ const rs=find(a,b,depM);
  if(!rs.length){box.innerHTML='<div class="card empty">'+T("noRoute")+'</div>';return}
  RS=rs;
- box.innerHTML=`<h2>${P[a]} → ${P[b]}</h2><p class="note" style="margin-bottom:20px">${T("alis")} ${fmt(t0())}${rush?` · ${LANG==="en"?"rush hour (slower)":"rush hour (mas matagal)"}`:""}. ${T("chooseRoute")}</p>`+rs.map(({r,tags},i)=>`<button class="rc" data-i="${i}">${tags.map(t=>`<span class="tag">${t}</span>`).join("")}<div class="big"><b>${hm(r.min)}</b><b>₱${r.fare}</b><small>${T("dating")} ${fmt(t0()+r.min)}</small></div><div class="bar">${r.legs.map(l=>`<i style="flex:${l.min};background:${M[l.m].c}"></i>`).join("")}</div><div>${r.legs.map(l=>`<span class="mc" style="--c:${M[l.m].c}">${M[l.m].i} ${M[l.m].n}</span>`).join("")}</div><span class="go2">${r.x} ${T("transfer")} · ${LANG==="en"?"Open guide ›":"Buksan ang guide ›"}</span></button>`).join("")+'<p class="note" style="margin-top:20px">'+T("estimate")+'</p>';
+ const firstTraffic = rs[0].r.trafficMultiplier;
+ const trafficNote = firstTraffic >= 1.5 ? T("trafficHigh") : firstTraffic >= 1.2 ? T("trafficMid") : T("trafficLow");
+ box.innerHTML=`<h2>${P[a]} → ${P[b]}</h2><p class="note" style="margin-bottom:8px">${T("alis")} ${fmt(depM)}. ${T("chooseRoute")}</p><p class="note" style="margin-bottom:20px;color:var(--r);font-weight:800">${trafficNote}</p>`+rs.map(({r,tags},i)=>`<button class="rc" data-i="${i}">${tags.map(t=>`<span class="tag">${t}</span>`).join("")}<div class="big"><b>${hm(r.min)}</b><b>₱${r.fare}</b><small>${T("dating")} ${fmt(depM+r.min)}</small></div><div class="bar">${r.legs.map(l=>`<i style="flex:${l.min};background:${M[l.m].c}"></i>`).join("")}</div><div>${r.legs.map(l=>`<span class="mc" style="--c:${M[l.m].c}">${M[l.m].i} ${M[l.m].n}</span>`).join("")}</div><span class="go2">${r.x} ${T("transfer")} · ${LANG==="en"?"Open guide ›":"Buksan ang guide ›"}</span></button>`).join("")+'<p class="note" style="margin-top:20px">'+T("estimate")+'</p>';
  box.querySelectorAll(".rc").forEach(c=>c.onclick=()=>openGuide(+c.dataset.i))}
 
 const ORD={mrt3:["north","cubao","ortigas","makati","taft"],lrt1:["monumento","recto","taft","baclaan","pitx"],lrt2:["recto","cubao","santolan","marikina"],carousel:["monumento","north","makati","taft","pitx"]};
 const ENDS={mrt3:["North Avenue","Taft Avenue"],lrt1:["Fernando Poe Jr.","PITX"],lrt2:["Recto","Antipolo"],carousel:["Monumento","PITX"]};
 const dirOf=l=>{const o=ORD[l.m];if(!o)return P[l.to];return ENDS[l.m][o.indexOf(l.to)>o.indexOf(l.from)?1:0]};
 
-function stepsFor(r,a,b){
- const total=r.legs.reduce((s,l)=>s+l.min,0)+6*r.x,f=total?r.min/total:1;let t=t0();
+function stepsFor(r,a,b,depM){
+ const total=r.legs.reduce((s,l)=>s+l.min,0)+6*r.x,f=total?r.min/total:1;let t=depM;
  const S=[{i:"🎒",c:"#ffc400",n:a,at:t,t:`${T("prep")}${P[a]}`,d:`${T("alis")} ${fmt(t)}. ${LANG==="en"?"Prepare coins or Beep card":"Ihanda ang barya o Beep card"} (${T("budget")} ₱${r.fare}). ${r.legs.length} ${T("sakay")} ${P[b]}.`}];
  r.legs.forEach((l,k)=>{
   const m=M[l.m],nx=r.legs[k+1],dur=Math.round(l.min*f);
@@ -341,8 +393,9 @@ function stepsFor(r,a,b){
 function openGuide(i){
  const{r,tags}=RS[i],{a,b}=ctx;view="guide";sn=0;curR=r;lastGuideIdx=i;$("#formcard").hidden=true;
  const L=[];r.path.forEach((s,k)=>{const m=s.e[2],z=L[L.length-1];if(z&&z.m===m&&rail(m))z.k.push(k);else L.push({m,k:[k]})});legK=L.map(z=>z.k);
- gsteps=stepsFor(r,a,b);const on=getF().includes(key(a,b));
- $("#results").innerHTML=`<div class="gtop"><button class="fav" id="back">${T("back")}</button><button class="fav ${on?"on":""}" id="fav">${on?T("saved"):T("save")}</button></div><h2>${T("guideTitle")}${P[a]} → ${P[b]}</h2><div>${tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div><p class="eta">🕒 ${T("alis")} ${fmt(t0())} → ${T("dating")} ~${fmt(arrive)}</p><div class="sum"><div><b>${hm(r.min)}</b><span>${T("travelTime")}</span></div><div><b>₱${r.fare}</b><span>${T("pamasahe")}</span></div><div><b>${r.x}</b><span>${T("transferLbl")}</span></div></div><div class="card" id="mapcard" style="padding:0;overflow:hidden"></div><div class="card"><div class="prog"><i id="pg"></i></div><ol class="gs" id="gs"></ol></div><div class="gnav"><button class="fav" id="prev" aria-label="Previous step">‹</button><button class="go" id="nx"></button></div>`;
+ const depM = t0();
+ gsteps=stepsFor(r,a,b,depM);const on=getF().includes(key(a,b));
+ $("#results").innerHTML=`<div class="gtop"><button class="fav" id="back">${T("back")}</button><button class="fav ${on?"on":""}" id="fav">${on?T("saved"):T("save")}</button></div><h2>${T("guideTitle")}${P[a]} → ${P[b]}</h2><div>${tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div><p class="eta">🕒 ${T("alis")} ${fmt(depM)} → ${T("dating")} ~${fmt(arrive)}</p><div class="sum"><div><b>${hm(r.min)}</b><span>${T("travelTime")}</span></div><div><b>₱${r.fare}</b><span>${T("pamasahe")}</span></div><div><b>${r.x}</b><span>${T("transferLbl")}</span></div></div><div class="card" id="mapcard" style="padding:0;overflow:hidden"></div><div class="card"><div class="prog"><i id="pg"></i></div><ol class="gs" id="gs"></ol></div><div class="gnav"><button class="fav" id="prev" aria-label="Previous step">‹</button><button class="go" id="nx"></button></div>`;
  drawMap(r);paint();scrollTo(0,0);
  $("#back").onclick=()=>{render();scrollTo(0,0)};
  $("#fav").onclick=e=>{const k=key(a,b);let f=getF();f=f.includes(k)?f.filter(x=>x!==k):[k,...f];mem=f;saveFavs(f);drawFavs();const o=f.includes(k);e.target.className="fav"+(o?" on":"");e.target.textContent=o?T("saved"):T("save")};
@@ -402,7 +455,7 @@ $("#swap").onclick=()=>{
   $("#to-val").value=a; $("#to").value=aTxt;
   redo();
 };
-$("#dep").onchange=()=>{autoRush();redo()};
+$("#dep").onchange=()=>{autoRush();redo()}; // Magre-recalculate agad pagpalit ng oras
 {const d=new Date();$("#dep").value=pad(d.getHours())+":"+pad(d.getMinutes());autoRush()}
 
 $("#loc").onclick=()=>{const m=$("#msg");if(!navigator.geolocation){m.textContent=T("locNo");return}
@@ -411,5 +464,5 @@ $("#loc").onclick=()=>{const m=$("#msg");if(!navigator.geolocation){m.textConten
   $("#from").value=P[best]; $("#from-val").value=best; m.textContent=T("locNearest")+P[best];render()},()=>{m.textContent=T("locFail")},{timeout:8000})};
 
 $("#cities").innerHTML=CitiesList.map(c=>`<span>${c}</span>`).join("");
-$("#ccount").textContent=SearchData.length+T("people")+CitiesList.length+T("citiesWord");
+$("#ccount").textContent=SearchData.length+T("people")+CitiesList.length+T("citiesWords");
 drawFavs();home();route();applyLang();
