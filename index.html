@@ -4,336 +4,123 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>SakayGuide — Commute Route Assistant</title>
-<link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#fff6df;--card:#fffdf6;--ink:#1d1a14;--mut:#6d6657;--line:#eadfbf;--y:#ffc400;--r:#d62828;--b:#1e5fd0;--g:#17a05d;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16130c;--card:#221d12;--ink:#fff3d1;--mut:#b5aa8c;--line:#3a321d;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#16130c;--card:#221d12;--ink:#fff3d1;--mut:#b5aa8c;--line:#3a321d;color-scheme:dark}
-*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font:500 16px/1.45 Nunito,system-ui,sans-serif;padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
-.wrap{max-width:600px;margin:0 auto;padding:0 16px}
-header{background:var(--y);border-bottom:6px solid var(--ink);position:relative;padding:18px 0 22px;color:#1d1a14}
-header:after{content:"";position:absolute;left:0;right:0;bottom:-18px;height:12px;background:repeating-linear-gradient(90deg,var(--r) 0 28px,#fff 28px 56px,var(--b) 56px 84px)}
-.brand{font:400 34px/1 "Bowlby One",Impact,sans-serif;letter-spacing:.5px;display:flex;align-items:center;gap:10px}
-.brand small{display:block;font:800 13px Nunito,sans-serif;letter-spacing:.14em;text-transform:uppercase;margin-top:6px}
-.sign{background:var(--r);color:#fff;border:3px solid #1d1a14;border-radius:10px;padding:2px 10px;transform:rotate(-2deg);display:inline-block}
-.tagline{margin:10px 0 0;font-weight:800}
-.panel{display:none;margin-top:36px}.panel.on{display:block}
-.card{background:var(--card);border:2px solid var(--ink);border-radius:18px;padding:16px;box-shadow:4px 4px 0 var(--ink);margin-bottom:18px}
-label{font:800 12px Nunito;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);display:block;margin:0 0 4px}
-.row{display:flex;gap:10px;align-items:flex-end}.row>div{flex:1;min-width:0}
-select{width:100%;font:800 16px Nunito;padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--bg);color:var(--ink)}
-.swap{flex:none;width:46px;height:46px;border-radius:50%;border:2px solid var(--ink);background:var(--y);color:#1d1a14;font-size:20px;cursor:pointer}
-.chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
-.chip{border:2px solid var(--ink);border-radius:99px;padding:6px 12px;font:800 13px Nunito;background:var(--card);color:var(--ink);cursor:pointer}
-.chip[aria-pressed=true]{background:var(--b);color:#fff}
-.go{width:100%;border:2px solid var(--ink);background:var(--r);color:#fff;font:400 20px "Bowlby One",Impact,sans-serif;padding:13px;border-radius:14px;cursor:pointer;box-shadow:0 4px 0 var(--ink)}
-.go:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
-.tag{display:inline-block;font:800 12px Nunito;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:99px;background:var(--y);color:#1d1a14;border:2px solid #1d1a14;margin:0 6px 6px 0}
-.sum{display:flex;gap:10px;margin:8px 0 14px}.sum div{flex:1;background:var(--bg);border:2px dashed var(--line);border-radius:12px;padding:8px;text-align:center}
-.sum b{display:block;font:400 24px "Bowlby One",Impact,sans-serif}.sum span{font-size:12px;color:var(--mut);font-weight:800}
-.steps{list-style:none;margin:0;padding:0}
-.step{display:flex;gap:12px;position:relative;padding-bottom:16px}
-.step:before{content:"";position:absolute;left:19px;top:40px;bottom:0;width:4px;background:var(--c);border-radius:4px;opacity:.55}
-.step:last-child:before{display:none}.step:last-child{padding-bottom:0}
-.ic{flex:none;width:40px;height:40px;border-radius:12px;background:var(--c);display:grid;place-items:center;font-size:20px;border:2px solid var(--ink)}
-.step b{display:block}.step small{color:var(--mut);font-weight:700}
-.xfer{margin-top:4px;font-size:13px;font-weight:800;color:var(--r)}
-.top{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.fav{border:2px solid var(--ink);background:var(--card);color:var(--ink);border-radius:12px;padding:6px 10px;font:800 14px Nunito;cursor:pointer}
-.fav.on{background:var(--y);color:#1d1a14}
-.empty{text-align:center;color:var(--mut);padding:26px 10px;font-weight:700}
-.saved{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:2px dashed var(--line)}
-.saved:last-child{border:0}.saved button{cursor:pointer}
-h2{font:400 22px "Bowlby One",Impact,sans-serif;margin:0 0 10px}
-table{width:100%;border-collapse:collapse;font-weight:700}td,th{padding:8px 4px;border-bottom:1px dashed var(--line);text-align:left}th{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
-.note{font-size:13px;color:var(--mut);font-weight:700}
-nav{position:fixed;left:0;right:0;bottom:0;background:var(--ink);padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;gap:6px;z-index:5}
-nav button{flex:1;max-width:190px;background:transparent;border:0;color:var(--bg);font:800 13px Nunito;padding:8px;border-radius:12px;cursor:pointer}
-nav button span{display:block;font-size:20px}
-nav button[aria-selected=true]{background:var(--y);color:#1d1a14}
-.pick{cursor:pointer}.pick.sel{outline:4px solid var(--y)}
-.live{font:800 11px Nunito,sans-serif;letter-spacing:.1em;color:var(--r);display:flex;align-items:center;gap:5px}.live i{width:9px;height:9px;border-radius:50%;background:var(--r);animation:pl 1.2s infinite}@keyframes pl{50%{opacity:.25;transform:scale(1.5)}}
-@media (prefers-reduced-motion:reduce){.live i{animation:none}}
-#mapcard svg{width:100%;max-width:380px;display:block;margin:8px auto 0}#mapcard text{font:800 10px Nunito,sans-serif;fill:var(--mut)}#mapcard text.on{fill:var(--ink);font-size:11px}
-.gm{display:block;text-align:center;text-decoration:none;margin-top:10px}
-[hidden]{display:none!important}
-.home{background:none;border:0;padding:0;color:inherit;cursor:pointer;text-align:left}
-#app .brand{font-size:26px}#app header{padding:12px 0 18px}#app .tagline{display:none}
-.hero{background:var(--y);color:#1d1a14;border-bottom:6px solid #1d1a14;position:relative;padding:22px 0 70px;overflow:hidden}
-.hero h1{font:400 clamp(38px,11vw,64px)/1.02 "Bowlby One",Impact,sans-serif;margin:26px 0 12px}
-.hero p{font-weight:800;font-size:18px;max-width:480px;margin:0 0 18px}
-.cta{max-width:340px}
-.road{position:absolute;left:0;right:0;bottom:0;height:34px;background:#1d1a14}
-.road:before{content:"";position:absolute;left:0;right:0;top:15px;border-top:4px dashed var(--y)}
-.road span{position:absolute;bottom:12px;font-size:36px;left:-60px;animation:drive 9s linear infinite}
-@keyframes drive{to{left:100%}}
-@media (prefers-reduced-motion:reduce){.road span{animation:none;left:20px}}
-.lp{padding-top:30px;padding-bottom:40px}.lp .card p{margin:6px 0 0;color:var(--mut);font-weight:700}
-.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}.fg .card{margin:0;text-align:center}.fi{font-size:30px}
-.rc{display:block;width:100%;text-align:left;font:inherit;color:inherit;background:var(--card);border:2px solid var(--ink);border-radius:18px;padding:14px;box-shadow:4px 4px 0 var(--ink);margin-bottom:16px;cursor:pointer}
-.rc:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
-.rc .big{display:flex;gap:18px;align-items:baseline;margin:4px 0 8px}.rc .big b{font:400 26px "Bowlby One",Impact,sans-serif}
-.mc{display:inline-flex;gap:4px;font:800 12px Nunito,sans-serif;padding:3px 8px;border-radius:99px;background:var(--c);color:#1d1a14;border:2px solid var(--ink);margin:0 4px 4px 0}
-.go2{display:block;margin-top:6px;font-weight:800;color:var(--r)}
-.gtop{display:flex;justify-content:space-between;gap:8px;margin-bottom:12px}
-.prog{height:10px;background:var(--line);border-radius:9px;overflow:hidden;margin-bottom:12px}.prog i{display:block;height:100%;background:var(--g);transition:width .3s}
-.gs{list-style:none;margin:0;padding:0}
-.gs li{display:flex;gap:12px;padding:12px;border:2px solid transparent;border-radius:14px;opacity:.55}
-.gs li.cur{opacity:1;border-color:var(--ink);background:var(--bg)}.gs li.done{opacity:.8}.gs li.done b{text-decoration:line-through}
-.gs b,.gs small{display:block}.gs small{color:var(--mut);font-weight:700}
-.sn{font:800 11px Nunito,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--r)}
-.gnav{position:sticky;bottom:calc(84px + env(safe-area-inset-bottom,0px));display:flex;gap:10px}
-.gnav .go{flex:1;font-size:16px}.gnav .fav{flex:none;padding:0 18px}.fav:disabled{opacity:.4}
-input[type=time]{width:100%;font:800 16px Nunito,sans-serif;padding:12px;border:2px solid var(--ink);border-radius:12px;background:var(--bg);color:var(--ink)}
-.qt{background:var(--card);color:var(--ink);border:3px solid #1d1a14;border-radius:20px;padding:16px;box-shadow:6px 6px 0 #1d1a14;max-width:420px}
-.lnk{display:block;margin-top:14px;background:none;border:0;padding:0;font:800 15px Nunito,sans-serif;color:#1d1a14;text-decoration:underline;cursor:pointer}
-.bar{display:flex;gap:3px;height:12px;margin:2px 0 10px}.bar i{border-radius:6px;border:2px solid var(--ink)}
-.rc{transition:transform .15s,box-shadow .15s}.rc:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
-.rc .big small{color:var(--mut);font-weight:800;margin-left:auto}
-.eta{margin:6px 0 12px;font-weight:800}
-.pop{display:flex;align-items:center;gap:10px;width:100%;margin-top:8px;padding:12px 14px;border:2px solid var(--ink);border-radius:14px;background:var(--bg);color:var(--ink);font:800 15px Nunito,sans-serif;cursor:pointer}
-.pop i{font-style:normal;color:var(--r)}.pop:hover{background:var(--y);color:#1d1a14}
-.gs li{margin-bottom:8px;animation:pop .25s}.gs li.cur{box-shadow:4px 4px 0 var(--ink);background:var(--card)}.gb{min-width:0}
-@keyframes pop{from{transform:scale(.97);opacity:0}}
-@media (prefers-reduced-motion:reduce){.gs li{animation:none}}
-:focus-visible{outline:3px solid var(--b);outline-offset:2px}
-.hero{background-image:radial-gradient(rgba(0,0,0,.09) 1.5px,transparent 1.5px);background-size:18px 18px}
-.pills{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}.pills span{border:2px solid var(--ink);border-radius:99px;padding:5px 12px;font:800 13px Nunito,sans-serif;background:var(--card)}.pills span:nth-child(3n+1){background:var(--y);color:#1d1a14}.pills span:nth-child(3n+2){background:var(--card)}
-#netmap svg{width:100%;max-width:380px;display:block;margin:8px auto 0}#netmap text{font:800 10px Nunito,sans-serif;fill:var(--ink)}
-.rc{animation:pop .3s both}.rc:nth-of-type(2){animation-delay:.07s}.rc:nth-of-type(3){animation-delay:.14s}
-select{background-image:none}
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
+
 <div id="landing">
-<section class="hero"><div class="wrap">
+<section class="hero"><div class="wrap" style="position:relative">
+ <div class="lang" role="group" aria-label="Language">
+   <button data-lang="fil" class="on">FIL</button>
+   <button data-lang="en">ENG</button>
+ </div>
  <div class="brand"><span class="sign">SAKAY</span>Guide</div>
- <h1>Para po! 🚐<br>Saan ka ngayon?</h1>
- <p>Planuhin ang byahe mo sa Metro Manila gamit ang jeep, bus, MRT, LRT at lakad. May malinaw na steps, tantiyang pamasahe at oras.</p>
- <div class="qt"><label for="lf">Saan ka galing?</label><select id="lf"></select><label for="lt" style="margin-top:10px">Saan ka pupunta?</label><select id="lt"></select><button class="go" id="lgo" style="margin-top:14px">HANAPIN ANG BYAHE →</button></div>
- <button class="lnk" id="start">Pasok na lang sa dashboard ›</button>
+ <h1 id="t-hero-h1">Para po! 🚐<br>Saan ka ngayon?</h1>
+ <p id="t-hero-p">Planuhin ang byahe mo sa Metro Manila gamit ang jeep, bus, MRT, LRT at lakad. May malinaw na steps, tantiyang pamasahe at oras.</p>
+ <div class="qt">
+   <label for="lf" id="t-lf">Saan ka galing?</label><select id="lf"></select>
+   <label for="lt" id="t-lt" style="margin-top:18px">Saan ka pupunta?</label><select id="lt"></select>
+   <button class="go" id="lgo" style="margin-top:24px"><span id="t-lgo">HANAPIN ANG BYAHE →</span></button>
+ </div>
+ <button class="lnk" id="start"><span id="t-start">Pasok na lang sa dashboard ›</span></button>
 </div><div class="road"><span>🚐</span></div></section>
 <section class="wrap lp">
- <h2>Paano gumagana?</h2>
- <div class="card"><span class="tag">Step 1</span><b>Piliin ang simula at destinasyon</b><p>Pumili ng lugar sa Metro Manila, tapos pindutin ang Hanapin.</p></div>
- <div class="card"><span class="tag">Step 2</span><b>Ihambing ang mga ruta</b><p>Pinakamabilis, pinakamura, o pinakakaunting transfer. Ikaw ang bahala.</p></div>
- <div class="card"><span class="tag">Step 3</span><b>Sundan ang Biyahe Guide</b><p>Isa-isang steps na may mapa, transfer points at pamasahe.</p></div>
- <h2 style="margin-top:28px">Sakop ang buong Metro Manila</h2>
- <div class="pills" id="cities"></div><p class="note" id="ccount"></p>
- <h2 style="margin-top:28px">Para sa araw-araw na commuter</h2>
- <div class="fg">
-  <div class="card"><div class="fi">⏱️</div><b>Oras at pamasahe</b></div>
-  <div class="card"><div class="fi">🔄</div><b>Transfer points</b></div>
-  <div class="card"><div class="fi">⭐</div><b>Saved na ruta</b></div>
-  <div class="card"><div class="fi">🗺️</div><b>Mapa ng byahe</b></div>
+ <div class="section-title">
+   <h2 id="t-how">Paano gumagana?</h2>
+   <p class="sub">Tatlong hakbang para makarating sa destinasyon.</p>
  </div>
- <button class="go" id="start2">PASOK SA DASHBOARD →</button>
- <p class="note" style="text-align:center;margin-top:14px">Estimate lang ang oras at pamasahe. Built-in na datos para sa Metro Manila.</p>
+ <div class="steps-grid">
+   <div class="card step-card"><span class="tag" id="t-s1">Step 1</span><b id="t-s1b" style="font-size:17px">Piliin ang simula at destinasyon</b><p id="t-s1p">Pumili ng lugar sa Metro Manila, tapos pindutin ang Hanapin.</p></div>
+   <div class="card step-card"><span class="tag" id="t-s2">Step 2</span><b id="t-s2b" style="font-size:17px">Ihambing ang mga ruta</b><p id="t-s2p">Pinakamabilis, pinakamura, o pinakakaunting transfer. Ikaw ang bahala.</p></div>
+   <div class="card step-card"><span class="tag" id="t-s3">Step 3</span><b id="t-s3b" style="font-size:17px">Sundan ang Biyahe Guide</b><p id="t-s3p">Isa-isang steps na may live na mapa, transfer points at pamasahe.</p></div>
+ </div>
+ 
+ <div class="section-title mt-lg">
+   <h2 id="t-scope">Sakop ang buong Metro Manila</h2>
+   <p class="sub">16 na lungsod at 1 munisipalidad.</p>
+ </div>
+ <div class="pills" id="cities"></div><p class="note" id="ccount"></p>
+ 
+ <div class="section-title mt-lg">
+   <h2 id="t-daily">Para sa araw-araw na commuter</h2>
+   <p class="sub">Mga feature na kailangan mo sa byahe.</p>
+ </div>
+ <div class="fg">
+  <div class="card feature-card"><span class="fi">⏱️</span><b id="t-f1">Oras at pamasahe</b></div>
+  <div class="card feature-card"><span class="fi">🔄</span><b id="t-f2">Transfer points</b></div>
+  <div class="card feature-card"><span class="fi">⭐</span><b id="t-f3">Saved na ruta</b></div>
+  <div class="card feature-card"><span class="fi">🗺️</span><b id="t-f4">Live na mapa</b></div>
+ </div>
+ <button class="go" id="start2" style="margin-top:32px"><span id="t-start2">PASOK SA DASHBOARD →</span></button>
+ <p class="note" style="text-align:center;margin-top:24px" id="t-foot">Estimate lang ang oras at pamasahe. Built-in na datos para sa Metro Manila.</p>
 </section>
 </div>
+
 <div id="app" hidden>
 <header><div class="wrap">
- <button class="brand home" id="home" aria-label="Bumalik sa home"><span class="sign">SAKAY</span>Guide</button>
- <p class="tagline">Para sa bawat commuter, “Para po!” 🚐 Metro Manila</p>
+ <button class="brand home" id="home" aria-label="Home"><span class="sign">SAKAY</span>Guide</button>
+ <p class="tagline" id="t-tagline">Para sa bawat commuter, "Para po!" 🚐 Metro Manila</p>
 </div></header>
 <main class="wrap">
 <section id="plan" class="panel on">
  <div class="card" id="formcard">
+  <div class="form-header"><h2 style="font-size:20px;margin:0">Plano ng Byahe</h2><p class="note" style="margin:0">Ilagay ang simula at destinasyon.</p></div>
   <div class="row">
-   <div><label for="from">Saan ka galing?</label><select id="from"></select></div>
-   <button class="swap" id="swap" aria-label="Palitan ang pinanggalingan at pupuntahan">⇅</button>
+   <div class="search-wrap">
+      <label for="from" id="t-from">Saan ka galing? (Search Barangay)</label>
+      <input type="text" id="from" placeholder="Hanapin ang barangay o lugar..." autocomplete="off">
+      <div class="search-res" id="from-res"></div>
+      <input type="hidden" id="from-val">
+   </div>
+   <button class="swap" id="swap" aria-label="Swap">⇅</button>
   </div>
-  <div style="margin-top:10px"><label for="to">Saan ka pupunta?</label><select id="to"></select></div>
-  <div style="margin-top:10px"><label for="dep">Anong oras aalis?</label><input type="time" id="dep"></div>
+  <div style="margin-top:18px" class="search-wrap">
+      <label for="to" id="t-to">Saan ka pupunta? (Search Barangay)</label>
+      <input type="text" id="to" placeholder="Hanapin ang barangay o lugar..." autocomplete="off">
+      <div class="search-res" id="to-res"></div>
+      <input type="hidden" id="to-val">
+  </div>
+  <div style="margin-top:18px"><label for="dep" id="t-dep">Anong oras aalis?</label><input type="time" id="dep"></div>
   <div class="chips">
-   <button class="chip" id="disc" aria-pressed="false">🎓 Student / PWD / Senior (−20%)</button>
-   <button class="chip" id="rush" aria-pressed="false">⏰ Rush hour</button>
-   <button class="chip" id="loc">📍 Nasaan ako?</button>
-   <div class="note" id="msg" style="width:100%"></div>
+   <button class="chip" id="disc" aria-pressed="false"><span id="t-disc">🎓 Student / PWD / Senior</span></button>
+   <button class="chip" id="rush" aria-pressed="false"><span id="t-rush">⏰ Rush hour</span></button>
+   <button class="chip" id="loc"><span id="t-loc">📍 Nasaan ako?</span></button>
+   <div class="note" id="msg" style="width:100%;margin-top:8px"></div>
   </div>
-  <button class="go" id="go">HANAPIN ANG BYAHE</button>
+  <button class="go" id="go" style="margin-top:10px"><span id="t-go">HANAPIN ANG BYAHE</span></button>
  </div>
  <div id="results"></div>
 </section>
-<section id="saved" class="panel"><div class="card"><h2>⭐ Paboritong Ruta</h2><div id="favs"></div></div></section>
+<section id="saved" class="panel"><div class="card"><h2 id="t-saved-h">⭐ Paboritong Ruta</h2><div id="favs"></div></div></section>
 <section id="fares" class="panel">
- <div class="card"><h2>💸 Pamasahe Guide</h2>
- <table><tr><th>Sakyan</th><th>Tantiya</th></tr>
- <tr><td>🚐 Jeep (modern)</td><td>₱15 pataas</td></tr>
+ <div class="card"><h2 id="t-fares-h">💸 Pamasahe Guide</h2>
+ <p class="note" style="margin-bottom:16px">Base sa official LTFRB fare matrix.</p>
+ <table id="fare-table"><tr><th id="t-fare-veh">Sakyan</th><th id="t-fare-est">Tantiya</th></tr>
+ <tr><td>🚐 Traditional Jeep</td><td>₱14 (unang 4km) + ₱2/km</td></tr>
+ <tr><td>🚐 Modern Jeep</td><td>₱17 (unang 4km) + ₱2.40/km</td></tr>
+ <tr><td>🛺 Tricycle</td><td>₱12 (fixed base)</td></tr>
  <tr><td>🚆 MRT-3</td><td>₱13–₱28</td></tr>
  <tr><td>🚇 LRT-1</td><td>₱16–₱35</td></tr>
  <tr><td>🚈 LRT-2</td><td>₱13–₱35</td></tr>
  <tr><td>🚍 EDSA Carousel</td><td>₱15–₱75</td></tr></table>
- <p class="note">Estimate lang ito para sa pagpaplano. Iba-iba ang aktuwal na pamasahe depende sa layo at operator. Laging i-check ang opisyal na fare matrix.</p></div>
- <div class="card"><h2>🎒 Tips ni Kuya Driver</h2>
- <p>• Maghanda ng barya at Beep card.<br>• Iwasan ang 7–9 AM at 5–8 PM kung kaya.<br>• Bantayan ang gamit sa siksikan.<br>• Sabihing “Para po!” nang maaga.</p></div>
+ <div class="info-box" style="margin-top:20px"><p class="note" style="margin:0"><b>Katotohanan:</b> Ang Jeepney at Tricycle fares ay kinukuwenta base sa LTFRB formula (base + per km). I-verify pa rin ang signboard.</p></div>
+ <p class="note" id="t-fare-note" style="margin-top:16px">Estimate lang ito para sa pagpaplano. Iba-iba ang aktuwal na pamasahe depende sa layo at operator.</p></div>
+ <div class="card"><h2 id="t-tips-h">🎒 Tips ni Kuya Driver</h2>
+ <ul class="tips-list" id="t-tips">
+   <li>Maghanda ng barya at Beep card.</li>
+   <li>Iwasan ang 7–9 AM at 5–8 PM kung kaya.</li>
+   <li>Bantayan ang gamit sa siksikan.</li>
+   <li>Sabihing "Para po!" nang maaga.</li>
+ </ul></div>
 </section>
 </main>
 <nav role="tablist">
- <button role="tab" aria-selected="true" data-t="plan"><span>🗺️</span>Magplano</button>
- <button role="tab" aria-selected="false" data-t="saved"><span>⭐</span>Saved</button>
- <button role="tab" aria-selected="false" data-t="fares"><span>💸</span>Pamasahe</button>
+ <button role="tab" aria-selected="true" data-t="plan"><span>🗺️</span><span id="t-nav1">Magplano</span></button>
+ <button role="tab" aria-selected="false" data-t="saved"><span>⭐</span><span id="t-nav2">Saved</span></button>
+ <button role="tab" aria-selected="false" data-t="fares"><span>💸</span><span id="t-nav3">Pamasahe</span></button>
 </nav></div>
-<script>
-const PL=[["fairview","Fairview","Quezon City",14.733,121.058],["novaliches","Novaliches","Quezon City",14.726,121.037],["north","SM North EDSA","Quezon City",14.6563,121.0306],["up","UP Diliman","Quezon City",14.6538,121.0685],["cubao","Cubao","Quezon City",14.62,121.053],["valenzuela","Valenzuela","Valenzuela",14.7011,120.983],["malabon","Malabon","Malabon",14.6625,120.957],["navotas","Navotas","Navotas",14.667,120.942],["monumento","Caloocan (Monumento)","Caloocan",14.654,120.9838],["recto","Recto","Manila",14.6035,120.983],["manila","Manila (Luneta)","Manila",14.5831,120.9794],["sanjuan","San Juan","San Juan",14.602,121.049],["mandaluyong","Mandaluyong","Mandaluyong",14.5794,121.0359],["ortigas","Ortigas","Pasig",14.5878,121.0567],["pasig","Pasig","Pasig",14.5764,121.0851],["santolan","Marikina (Santolan)","Marikina",14.6228,121.086],["makati","Makati (Ayala)","Makati",14.5547,121.0244],["bgc","BGC","Taguig",14.5507,121.0509],["bicutan","Taguig (Bicutan)","Taguig",14.495,121.051],["pateros","Pateros","Pateros",14.544,121.069],["taft","Taft Ave","Pasay",14.5378,121.0014],["moa","SM MOA","Pasay",14.535,120.9822],["naia","NAIA","Pasay",14.5086,121.0194],["pitx","PITX","Parañaque",14.51,120.991],["paranaque","Parañaque (BF)","Parañaque",14.459,121.026],["laspinas","Las Piñas","Las Piñas",14.45,120.993],["alabang","Alabang","Muntinlupa",14.42,121.04]];
-const P={},C={};PL.forEach(([k,n,c,la,lo])=>{P[k]=n;C[k]=[la,lo]});
-const M={walk:{n:"Lakad",c:"#9aa38a",i:"🚶"},jeep:{n:"Jeep",c:"#ffc400",i:"🚐"},bus:{n:"Bus",c:"#5b9bff",i:"🚌"},carousel:{n:"EDSA Carousel",c:"#ff8a3d",i:"🚍"},mrt3:{n:"MRT-3",c:"#3b82f6",i:"🚆"},lrt1:{n:"LRT-1",c:"#34c77b",i:"🚇"},lrt2:{n:"LRT-2",c:"#b57bff",i:"🚈"}};
-const E=[["north","cubao","mrt3",12,20],["cubao","ortigas","mrt3",7,16],["ortigas","makati","mrt3",13,20],["makati","taft","mrt3",10,16],
-["monumento","recto","lrt1",25,25],["recto","taft","lrt1",20,25],["taft","pitx","lrt1",18,20],["recto","cubao","lrt2",22,25],["cubao","santolan","lrt2",15,20],
-["monumento","north","carousel",15,15],["north","makati","carousel",45,35],["makati","pitx","carousel",30,25],
-["fairview","north","bus",45,30],["fairview","novaliches","bus",20,20],["novaliches","north","bus",25,20],["up","north","jeep",20,15],["up","cubao","jeep",25,15],["cubao","ortigas","jeep",25,15],
-["ortigas","bgc","bus",20,20],["makati","bgc","bus",20,20],["taft","moa","jeep",15,15],["taft","naia","jeep",25,20],["moa","naia","bus",15,15],["pitx","naia","bus",20,20],["pitx","moa","bus",15,15],
-["valenzuela","monumento","bus",30,25],["valenzuela","malabon","jeep",30,20],["malabon","monumento","jeep",25,15],["navotas","malabon","jeep",15,15],["recto","manila","jeep",20,13],["manila","taft","jeep",25,15],
-["sanjuan","cubao","jeep",15,13],["sanjuan","ortigas","jeep",15,15],["sanjuan","mandaluyong","jeep",15,13],["mandaluyong","ortigas","jeep",15,13],["mandaluyong","makati","jeep",20,15],
-["pasig","ortigas","jeep",25,15],["pasig","santolan","jeep",25,15],["pasig","pateros","jeep",25,15],["pateros","bgc","jeep",20,15],
-["bicutan","bgc","bus",25,20],["bicutan","naia","bus",30,25],["bicutan","alabang","bus",30,25],
-["paranaque","pitx","jeep",25,15],["paranaque","naia","jeep",25,15],["paranaque","laspinas","jeep",25,15],["laspinas","pitx","bus",25,20],["laspinas","alabang","bus",35,25],["alabang","pitx","bus",45,35]];
-const ADJ={};E.forEach(e=>{(ADJ[e[0]]??=[]).push({to:e[1],e});(ADJ[e[1]]??=[]).push({to:e[0],e})});
-const $=s=>document.querySelector(s);let disc=false,rush=false,cur=null;
-const cities=[...new Set(PL.map(p=>p[2]))].sort((a,b)=>a.localeCompare(b));
-const opts=cities.map(c=>`<optgroup label="${c}">${PL.filter(p=>p[2]===c).map(p=>`<option value="${p[0]}">${p[1]}</option>`).join("")}</optgroup>`).join("");
-$("#from").innerHTML=opts;$("#to").innerHTML=opts;$("#from").value="fairview";$("#to").value="makati";
-const rail=m=>["mrt3","lrt1","lrt2","carousel"].includes(m);
-function build(path){ // path: [{from,to,e}]
- const legs=[];
- path.forEach(s=>{const m=s.e[2],l=legs[legs.length-1];
-  if(l&&l.m===m&&rail(m)){l.to=s.to;l.min+=s.e[3];l.fare+=s.e[4]*.7}
-  else legs.push({m,from:s.from,to:s.to,min:s.e[3],fare:s.e[4]})});
- legs.forEach(l=>l.fare=Math.round(l.fare));
- return legs}
-function find(a,b){
- const out=[];
- (function dfs(n,seen,path){
-  if(n===b){out.push(path.slice());return}
-  if(path.length>=8)return;
-  for(const x of ADJ[n]||[]){if(seen.has(x.to))continue;seen.add(x.to);path.push({from:n,to:x.to,e:x.e});dfs(x.to,seen,path);path.pop();seen.delete(x.to)}
- })(a,new Set([a]),[]);
- const rs=out.map(p=>{const legs=build(p);const x=legs.length-1;
-  let min=legs.reduce((s,l)=>s+l.min,0)+x*6;if(rush)min=Math.round(min*1.4);
-  let fare=legs.reduce((s,l)=>s+l.fare,0);if(disc)fare=Math.round(fare*.8);
-  return{legs,min,fare,x,path:p,sig:legs.map(l=>l.m+l.to).join()}});
- const seen=new Set(),u=rs.filter(r=>!seen.has(r.sig)&&seen.add(r.sig));
- const pick=(f,t)=>u.slice().sort(f)[0],res=[];
- const add=(r,t)=>{if(!r)return;const f=res.find(z=>z.r===r);f?f.tags.push(t):res.push({r,tags:[t]})};
- add(pick((p,q)=>p.min-q.min),"⚡ Pinakamabilis");
- add(pick((p,q)=>p.fare-q.fare||p.min-q.min),"💰 Pinakamura");
- add(pick((p,q)=>p.x-q.x||p.min-q.min),"🧘 Pinakakaunting transfer");
- return res}
-const hm=m=>m>=60?`${Math.floor(m/60)}h ${m%60}m`:`${m} min`;
-const key=(a,b)=>a+">"+b;
-function favs(){try{return JSON.parse(localStorage.getItem("sg_fav")||"[]")}catch(e){return[]}}
-function saveFavs(f){try{localStorage.setItem("sg_fav",JSON.stringify(f))}catch(e){}}
-let mem=null;const getF=()=>mem??(mem=favs());
-function drawFavs(){
- const f=getF(),box=$("#favs");
- box.innerHTML=f.length?f.map(k=>{const[a,b]=k.split(">");return`<div class="saved"><b>${P[a]} → ${P[b]}</b><span><button class="fav" data-o="${k}">Tingnan</button> <button class="fav" data-d="${k}" aria-label="Alisin">✕</button></span></div>`}).join(""):'<div class="empty">Wala pang naka-save. Hanapin ang ruta at pindutin ang ☆ I-save. 🚏</div>';
- box.querySelectorAll("[data-o]").forEach(x=>x.onclick=()=>{const[a,b]=x.dataset.o.split(">");$("#from").value=a;$("#to").value=b;tab("plan");render()});
- box.querySelectorAll("[data-d]").forEach(x=>x.onclick=()=>{mem=getF().filter(z=>z!==x.dataset.d);saveFavs(mem);drawFavs();render&&$("#results").innerHTML&&render()})}
-function tab(t){document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id===t));document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-selected",b.dataset.t===t));scrollTo(0,0)}
-document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>tab(b.dataset.t));
-$("#go").onclick=render;
-$("#swap").onclick=()=>{const a=$("#from").value;$("#from").value=$("#to").value;$("#to").value=a;render()};
-$("#disc").onclick=e=>{disc=!disc;e.target.setAttribute("aria-pressed",disc);$("#results").innerHTML&&render()};
-$("#rush").onclick=e=>{rush=!rush;e.target.setAttribute("aria-pressed",rush);$("#results").innerHTML&&render()};
-const px=(la,lo)=>[20+(lo-120.93)/.19*300,20+(14.77-la)/.37*600],g=n=>px(...C[n]);
-let RS=[],raf=0,me=null;
-$("#loc").onclick=()=>{const m=$("#msg");if(!navigator.geolocation){m.textContent="Hindi supported ang location sa device na ito.";return}
- m.textContent="Hinahanap ang location mo...";
- navigator.geolocation.getCurrentPosition(p=>{me=[p.coords.latitude,p.coords.longitude];let best,d=1e9;for(const k in C){const q=(C[k][0]-me[0])**2+(C[k][1]-me[1])**2;if(q<d){d=q;best=k}}
-  $("#from").value=best;m.textContent="Pinakamalapit na lugar sa iyo: "+P[best];render()},()=>{m.textContent="Hindi makuha ang location. Paki-allow ang location permission."},{timeout:8000})};
-let view="list",sn=0,gsteps=[],ctx={},searched=false,legK=[],curR=null,arrive=0,pendingGo=false;
-const pad=n=>String(n).padStart(2,"0");
-const fmt=m=>{m=(Math.round(m)%1440+1440)%1440;const h=Math.floor(m/60);return`${h%12||12}:${pad(m%60)} ${h<12?"AM":"PM"}`};
-const t0=()=>{const v=($("#dep").value||"08:00").split(":");return+v[0]*60+ +v[1]};
-const autoRush=()=>{const h=t0()/60;rush=(h>=7&&h<9)||(h>=17&&h<20);$("#rush").setAttribute("aria-pressed",rush)};
-const ORD={mrt3:["north","cubao","ortigas","makati","taft"],lrt1:["monumento","recto","taft","pitx"],lrt2:["recto","cubao","santolan"],carousel:["monumento","north","makati","pitx"]};
-const ENDS={mrt3:["North Avenue","Taft Avenue"],lrt1:["Fernando Poe Jr.","PITX / Baclaran"],lrt2:["Recto","Antipolo"],carousel:["Monumento","PITX"]};
-const dirOf=l=>ENDS[l.m][ORD[l.m].indexOf(l.to)>ORD[l.m].indexOf(l.from)?1:0];
-const POP=[["monumento","bgc"],["pasig","naia"],["valenzuela","makati"],["up","bgc"],["laspinas","cubao"]];
-function render(){
- view="list";searched=true;cancelAnimationFrame(raf);$("#formcard").hidden=false;
- const a=$("#from").value,b=$("#to").value,box=$("#results");ctx={a,b};
- if(a===b){box.innerHTML='<div class="card empty">Pareho ang pinanggalingan at pupuntahan. Pumili ng ibang lugar. 😅</div>';return}
- const rs=find(a,b);
- if(!rs.length){box.innerHTML='<div class="card empty">Wala pang ruta para dito sa ngayon. Subukan ang kalapit na istasyon o terminal. 🚏</div>';return}
- RS=rs;
- box.innerHTML=`<h2>${P[a]} → ${P[b]}</h2><p class="note">Alis ${fmt(t0())}${rush?" · rush hour (mas matagal)":""}. Pumili ng ruta para buksan ang Biyahe Guide.</p>`+rs.map(({r,tags},i)=>`<button class="rc" data-i="${i}">${tags.map(t=>`<span class="tag">${t}</span>`).join("")}<div class="big"><b>${hm(r.min)}</b><b>₱${r.fare}</b><small>dating ${fmt(t0()+r.min)}</small></div><div class="bar">${r.legs.map(l=>`<i style="flex:${l.min};background:${M[l.m].c}"></i>`).join("")}</div><div>${r.legs.map(l=>`<span class="mc" style="--c:${M[l.m].c}">${M[l.m].i} ${M[l.m].n}</span>`).join("")}</div><span class="go2">${r.x} transfer · Buksan ang guide ›</span></button>`).join("")+'<p class="note">Estimate lang ang oras at pamasahe. Built-in na datos ito para sa Metro Manila, hindi live na galing sa Google Maps.</p>';
- box.querySelectorAll(".rc").forEach(c=>c.onclick=()=>openGuide(+c.dataset.i))}
-function stepsFor(r,a,b){
- const f=r.min/(r.legs.reduce((s,l)=>s+l.min,0)+6*r.x);let t=t0();
- const S=[{i:"🎒",c:"#ffc400",n:a,at:t,t:`Maghanda sa ${P[a]}`,d:`Alis ${fmt(t)}. Ihanda ang barya o Beep card (budget ₱${r.fare}). ${r.legs.length} ang sakay mo papuntang ${P[b]}.`}];
- r.legs.forEach((l,k)=>{
-  const m=M[l.m],nx=r.legs[k+1],ks=legK[k],mid=r.path.slice(ks[0],ks[ks.length-1]).map(s=>P[s.to]),dur=Math.round(l.min*f);
-  const how=rail(l.m)?(l.m==="carousel"?`Pumila sa EDSA Carousel stop sa ${P[l.from]} at sumakay papuntang ${dirOf(l)}.`:`Pumasok sa ${m.n} station sa ${P[l.from]}, i-tap ang Beep card at sumakay papuntang ${dirOf(l)}.`)
-   :l.m==="jeep"?`Humanap ng jeep sa ${P[l.from]} na may signboard na “${P[l.to]}”. Iabot ang bayad at sabihing “Para po!” sa ${P[l.to]}.`
-   :`Sumakay ng bus papuntang ${P[l.to]} sa ${P[l.from]}. Sabihin sa konduktor kung saan ka bababa.`;
-  S.push({i:m.i,c:m.c,k,at:t,t:`${m.n}: ${P[l.from]} → ${P[l.to]}`,d:`${how}${mid.length?` Dadaan sa ${mid.join(", ")}.`:""} ~${dur} min · ₱${l.fare}.${nx?` Bumaba sa ${P[l.to]} (transfer point) at maglakad ng ~6 min papuntang ${M[nx.m].n}.`:""}`});
-  t+=dur+(nx?Math.round(6*f):0)});
- arrive=t;S.push({i:"📍",c:"#d62828",n:b,at:t,t:`Nakarating ka na sa ${P[b]}!`,d:"Ingat sa paglakad at sa gamit mo. 🙌"});return S}
-function openGuide(i){
- const{r,tags}=RS[i],{a,b}=ctx;view="guide";sn=0;curR=r;$("#formcard").hidden=true;
- const L=[];r.path.forEach((s,k)=>{const m=s.e[2],z=L[L.length-1];if(z&&z.m===m&&rail(m))z.k.push(k);else L.push({m,k:[k]})});legK=L.map(z=>z.k);
- gsteps=stepsFor(r,a,b);const on=getF().includes(key(a,b));
- $("#results").innerHTML=`<div class="gtop"><button class="fav" id="back">‹ Mga ruta</button><button class="fav ${on?"on":""}" id="fav">${on?"★ Saved":"☆ I-save"}</button></div><h2>Biyahe Guide: ${P[a]} → ${P[b]}</h2><div>${tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div><p class="eta">🕒 Alis ${fmt(t0())} → Dating ~${fmt(arrive)}</p><div class="sum"><div><b>${hm(r.min)}</b><span>TRAVEL TIME</span></div><div><b>₱${r.fare}</b><span>PAMASAHE</span></div><div><b>${r.x}</b><span>TRANSFER</span></div></div><div class="card" id="mapcard"></div><div class="card"><div class="prog"><i id="pg"></i></div><ol class="gs" id="gs"></ol></div><div class="gnav"><button class="fav" id="prev" aria-label="Nakaraang step">‹</button><button class="go" id="nx"></button></div>`;
- drawMap(r);paint();scrollTo(0,0);
- $("#back").onclick=()=>{render();scrollTo(0,0)};
- $("#fav").onclick=e=>{const k=key(a,b);let f=getF();f=f.includes(k)?f.filter(x=>x!==k):[k,...f];mem=f;saveFavs(f);drawFavs();const o=f.includes(k);e.target.className="fav"+(o?" on":"");e.target.textContent=o?"★ Saved":"☆ I-save"};
- $("#prev").onclick=()=>{sn--;paint()};
- $("#nx").onclick=()=>{if(sn===gsteps.length-1){render();scrollTo(0,0);return}sn++;paint()}}
-function focus(){
- cancelAnimationFrame(raf);
- const ln=[...document.querySelectorAll("#mapcard svg line")],base=E.length,s=gsteps[sn],cur=s.k!==undefined?legK[s.k]:null,v=$("#veh"),vt=$("#vt");
- legK.flat().forEach(k=>{ln[base+2*k].style.opacity=ln[base+2*k+1].style.opacity=!cur||cur.includes(k)?1:.2});
- if(!cur){v.setAttribute("transform",`translate(${g(s.n)})`);vt.textContent=s.i;return}
- const segs=cur.map(k=>{const e=curR.path[k],p=g(e.from),q=g(e.to);return{p,q,l:Math.hypot(q[0]-p[0],q[1]-p[1]),m:e.e[2]}}),tot=segs.reduce((x,y)=>x+y.l,0);
- const put=(z,t)=>{v.setAttribute("transform",`translate(${z.p[0]+(z.q[0]-z.p[0])*t} ${z.p[1]+(z.q[1]-z.p[1])*t})`);vt.textContent=M[z.m].i};
- if(matchMedia("(prefers-reduced-motion: reduce)").matches){put(segs[0],0);return}
- const step=now=>{let d=(now%4500)/4500*tot;for(const z of segs){if(d<=z.l){put(z,d/z.l);break}d-=z.l}raf=requestAnimationFrame(step)};raf=requestAnimationFrame(step)}
-function paint(){
- const n=gsteps.length;$("#pg").style.width=sn/(n-1)*100+"%";
- $("#gs").innerHTML=gsteps.map((s,k)=>`<li class="${k<sn?"done":k===sn?"cur":""}"><div class="ic" style="--c:${s.c}">${k<sn?"✓":s.i}</div><div class="gb"><span class="sn">Step ${k+1} · ${fmt(s.at)}</span><b>${s.t}</b><small>${s.d}</small></div></li>`).join("");
- $("#nx").textContent=sn===n-1?"TAPOS NA! 🎉":`TAPOS NA ANG STEP ${sn+1} ✓`;$("#prev").disabled=sn===0;focus();
- const c=$("#gs .cur");c&&c.scrollIntoView({block:"nearest",behavior:"smooth"})}
-function route(){const app=location.hash==="#dashboard";$("#landing").hidden=app;$("#app").hidden=!app;scrollTo(0,0);if(app&&pendingGo){pendingGo=false;render()}}
-addEventListener("hashchange",route);
-$("#start").onclick=$("#start2").onclick=()=>{location.hash="dashboard"};
-$("#home").onclick=()=>{location.hash=""};
-$("#lf").innerHTML=opts;$("#lt").innerHTML=opts;$("#lf").value="fairview";$("#lt").value="makati";
-$("#lgo").onclick=()=>{$("#from").value=$("#lf").value;$("#to").value=$("#lt").value;pendingGo=true;location.hash="dashboard"};
-const redo=()=>{if(view==="list"&&searched)render()};
-$("#disc").onclick=e=>{disc=!disc;e.currentTarget.setAttribute("aria-pressed",disc);redo()};
-$("#rush").onclick=e=>{rush=!rush;e.currentTarget.setAttribute("aria-pressed",rush);redo()};
-$("#swap").onclick=()=>{const a=$("#from").value;$("#from").value=$("#to").value;$("#to").value=a;redo()};
-$("#dep").onchange=()=>{autoRush();redo()};
-{const d=new Date();$("#dep").value=pad(d.getHours())+":"+pad(d.getMinutes());autoRush()}
-const LS={north:"t",monumento:"b",malabon:"b",navotas:"t",ortigas:"t",santolan:"t",bgc:"b",novaliches:"l",makati:"l",moa:"l",pitx:"l",laspinas:"l",manila:"l",mandaluyong:"l",sanjuan:"l",cubao:"l"};
-let tapA=null;
-function mapSvg(r){
- const bay=[[14.64,120.93],[14.635,120.945],[14.61,120.965],[14.59,120.969],[14.57,120.973],[14.55,120.975],[14.52,120.977],[14.47,120.978],[14.43,120.97],[14.4,120.96],[14.4,120.93]].map(a=>px(...a).join(",")).join(" ");
- const on=r?new Set(r.path.flatMap(s=>[s.from,s.to])):new Set();
- let h=`<svg viewBox="0 0 340 640" role="img" aria-label="Mapa ng Metro Manila"><polygon points="${bay}" style="fill:#4aa3df;opacity:.25"/><text x="46" y="520" transform="rotate(-90 46 520)" style="font-style:italic;fill:#4aa3df">Manila Bay</text>`;
- E.forEach(e=>{const p=g(e[0]),q=g(e[1]);h+=`<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" style="stroke:var(--line)" stroke-width="3" stroke-linecap="round"/>`});
- if(r)r.path.forEach(s=>{const p=g(s.from),q=g(s.to),d=`x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke-linecap="round"`;h+=`<line ${d} style="stroke:var(--ink)" stroke-width="10"/><line ${d} stroke="${M[s.e[2]].c}" stroke-width="6"/>`});
- for(const k in C){const p=g(k),o=on.has(k),s=LS[k]||"r",x=p[0]+(s==="l"?-11:s==="r"?11:0),y=p[1]+(s==="t"?-11:s==="b"?17:4);
-  h+=`<g data-k="${k}"${r?"":' style="cursor:pointer"'}><circle cx="${p[0]}" cy="${p[1]}" r="${o?7:r?4:6}" style="fill:${o?"var(--card)":r?"var(--mut)":"var(--y)"};stroke:var(--ink)" stroke-width="2"/><text class="${o||!r?"on":""}" x="${x}" y="${y}" text-anchor="${s==="l"?"end":s==="r"?"start":"middle"}">${P[k]}</text></g>`}
- if(r){const pa=g(r.path[0].from),pb=g(r.path[r.path.length-1].to);
-  h+=`<text x="${pa[0]-8}" y="${pa[1]-12}" style="font-size:16px">🟢</text><text x="${pb[0]-8}" y="${pb[1]-12}" style="font-size:16px">📍</text>`;
-  h+=`<g id="veh"><circle r="14" style="fill:var(--y);stroke:var(--ink)" stroke-width="2"/><text id="vt" text-anchor="middle" y="5" style="font-size:15px"></text></g>`}
- if(me){const m=px(...me);if(m[0]>0&&m[0]<340&&m[1]>0&&m[1]<640)h+=`<circle cx="${m[0]}" cy="${m[1]}" r="6" style="fill:var(--b);stroke:#fff" stroke-width="2"><animate attributeName="r" values="6;11;6" dur="1.6s" repeatCount="indefinite"/></circle>`}
- return h+"</svg>"}
-function drawMap(r){
- const a=r.path[0].from,b=r.path[r.path.length-1].to;
- $("#mapcard").innerHTML=`<div class="top"><h2 style="margin:0;font-size:18px">🗺️ Mapa ng byahe</h2><span class="live"><i></i>LIVE SIM</span></div>${mapSvg(r)}<a class="chip gm" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&travelmode=transit&origin=${encodeURIComponent(P[a]+", Metro Manila")}&destination=${encodeURIComponent(P[b]+", Metro Manila")}">Buksan sa Google Maps ↗</a>`}
-function home(){view="list";searched=false;tapA=null;cancelAnimationFrame(raf);$("#formcard").hidden=false;
- $("#results").innerHTML=`<div class="card hm"><h2>Mga sikat na byahe</h2><p class="note">Pindutin para subukan agad, o ilagay ang sarili mong biyahe sa itaas.</p>${POP.map(([a,b],i)=>`<button class="pop" data-i="${i}"><span>${P[a]}</span><i>→</i><span>${P[b]}</span></button>`).join("")}</div><div class="card"><h2>🗺️ Mapa ng Metro Manila</h2><p class="note" id="tapmsg">Pindutin ang pinagmumulan, tapos ang pupuntahan.</p><div id="netmap">${mapSvg(null)}</div></div>`;
- document.querySelectorAll(".pop").forEach(x=>x.onclick=()=>{const[a,b]=POP[+x.dataset.i];$("#from").value=a;$("#to").value=b;render()});
- $("#netmap").onclick=e=>{const n=e.target.closest("[data-k]");if(!n)return;const k=n.dataset.k;
-  if(!tapA){tapA=k;$("#from").value=k;$("#tapmsg").textContent=`Galing: ${P[k]}. Piliin na ang pupuntahan.`}
-  else if(k!==tapA){$("#from").value=tapA;$("#to").value=k;tapA=null;render()}}}
-$("#cities").innerHTML=cities.map(c=>`<span>${c}</span>`).join("");
-$("#ccount").textContent=`${PL.length} lugar sa ${cities.length} lungsod at bayan, kasama ang Pasig, Taguig at Caloocan.`;
-drawFavs();home();route();
-</script>
+
+<script src="app.js"></script>
 </body>
 </html>
