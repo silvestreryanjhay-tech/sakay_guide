@@ -97,6 +97,12 @@ input[type=time]{width:100%;font:800 16px Nunito,sans-serif;padding:12px;border:
 .gs li{margin-bottom:8px;animation:pop .25s}.gs li.cur{box-shadow:4px 4px 0 var(--ink);background:var(--card)}.gb{min-width:0}
 @keyframes pop{from{transform:scale(.97);opacity:0}}
 @media (prefers-reduced-motion:reduce){.gs li{animation:none}}
+:focus-visible{outline:3px solid var(--b);outline-offset:2px}
+.hero{background-image:radial-gradient(rgba(0,0,0,.09) 1.5px,transparent 1.5px);background-size:18px 18px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}.pills span{border:2px solid var(--ink);border-radius:99px;padding:5px 12px;font:800 13px Nunito,sans-serif;background:var(--card)}.pills span:nth-child(3n+1){background:var(--y);color:#1d1a14}.pills span:nth-child(3n+2){background:var(--card)}
+#netmap svg{width:100%;max-width:380px;display:block;margin:8px auto 0}#netmap text{font:800 10px Nunito,sans-serif;fill:var(--ink)}
+.rc{animation:pop .3s both}.rc:nth-of-type(2){animation-delay:.07s}.rc:nth-of-type(3){animation-delay:.14s}
+select{background-image:none}
 </style>
 </head>
 <body>
@@ -113,6 +119,8 @@ input[type=time]{width:100%;font:800 16px Nunito,sans-serif;padding:12px;border:
  <div class="card"><span class="tag">Step 1</span><b>Piliin ang simula at destinasyon</b><p>Pumili ng lugar sa Metro Manila, tapos pindutin ang Hanapin.</p></div>
  <div class="card"><span class="tag">Step 2</span><b>Ihambing ang mga ruta</b><p>Pinakamabilis, pinakamura, o pinakakaunting transfer. Ikaw ang bahala.</p></div>
  <div class="card"><span class="tag">Step 3</span><b>Sundan ang Biyahe Guide</b><p>Isa-isang steps na may mapa, transfer points at pamasahe.</p></div>
+ <h2 style="margin-top:28px">Sakop ang buong Metro Manila</h2>
+ <div class="pills" id="cities"></div><p class="note" id="ccount"></p>
  <h2 style="margin-top:28px">Para sa araw-araw na commuter</h2>
  <div class="fg">
   <div class="card"><div class="fi">⏱️</div><b>Oras at pamasahe</b></div>
@@ -168,18 +176,23 @@ input[type=time]{width:100%;font:800 16px Nunito,sans-serif;padding:12px;border:
  <button role="tab" aria-selected="false" data-t="fares"><span>💸</span>Pamasahe</button>
 </nav></div>
 <script>
-const P={fairview:"Fairview",north:"SM North EDSA",up:"UP Diliman",cubao:"Cubao",ortigas:"Ortigas",bgc:"BGC",makati:"Makati (Ayala)",taft:"Taft Ave / Pasay",moa:"SM MOA",naia:"NAIA",pitx:"PITX",recto:"Recto",monumento:"Monumento",santolan:"Santolan"};
+const PL=[["fairview","Fairview","Quezon City",14.733,121.058],["novaliches","Novaliches","Quezon City",14.726,121.037],["north","SM North EDSA","Quezon City",14.6563,121.0306],["up","UP Diliman","Quezon City",14.6538,121.0685],["cubao","Cubao","Quezon City",14.62,121.053],["valenzuela","Valenzuela","Valenzuela",14.7011,120.983],["malabon","Malabon","Malabon",14.6625,120.957],["navotas","Navotas","Navotas",14.667,120.942],["monumento","Caloocan (Monumento)","Caloocan",14.654,120.9838],["recto","Recto","Manila",14.6035,120.983],["manila","Manila (Luneta)","Manila",14.5831,120.9794],["sanjuan","San Juan","San Juan",14.602,121.049],["mandaluyong","Mandaluyong","Mandaluyong",14.5794,121.0359],["ortigas","Ortigas","Pasig",14.5878,121.0567],["pasig","Pasig","Pasig",14.5764,121.0851],["santolan","Marikina (Santolan)","Marikina",14.6228,121.086],["makati","Makati (Ayala)","Makati",14.5547,121.0244],["bgc","BGC","Taguig",14.5507,121.0509],["bicutan","Taguig (Bicutan)","Taguig",14.495,121.051],["pateros","Pateros","Pateros",14.544,121.069],["taft","Taft Ave","Pasay",14.5378,121.0014],["moa","SM MOA","Pasay",14.535,120.9822],["naia","NAIA","Pasay",14.5086,121.0194],["pitx","PITX","Parañaque",14.51,120.991],["paranaque","Parañaque (BF)","Parañaque",14.459,121.026],["laspinas","Las Piñas","Las Piñas",14.45,120.993],["alabang","Alabang","Muntinlupa",14.42,121.04]];
+const P={},C={};PL.forEach(([k,n,c,la,lo])=>{P[k]=n;C[k]=[la,lo]});
 const M={walk:{n:"Lakad",c:"#9aa38a",i:"🚶"},jeep:{n:"Jeep",c:"#ffc400",i:"🚐"},bus:{n:"Bus",c:"#5b9bff",i:"🚌"},carousel:{n:"EDSA Carousel",c:"#ff8a3d",i:"🚍"},mrt3:{n:"MRT-3",c:"#3b82f6",i:"🚆"},lrt1:{n:"LRT-1",c:"#34c77b",i:"🚇"},lrt2:{n:"LRT-2",c:"#b57bff",i:"🚈"}};
-const E=[
-["north","cubao","mrt3",12,20],["cubao","ortigas","mrt3",7,16],["cubao","makati","mrt3",20,24],["ortigas","makati","mrt3",13,20],["makati","taft","mrt3",10,16],
-["monumento","recto","lrt1",25,25],["recto","taft","lrt1",20,25],["taft","pitx","lrt1",18,20],
-["recto","cubao","lrt2",22,25],["cubao","santolan","lrt2",15,20],
+const E=[["north","cubao","mrt3",12,20],["cubao","ortigas","mrt3",7,16],["ortigas","makati","mrt3",13,20],["makati","taft","mrt3",10,16],
+["monumento","recto","lrt1",25,25],["recto","taft","lrt1",20,25],["taft","pitx","lrt1",18,20],["recto","cubao","lrt2",22,25],["cubao","santolan","lrt2",15,20],
 ["monumento","north","carousel",15,15],["north","makati","carousel",45,35],["makati","pitx","carousel",30,25],
-["fairview","north","bus",45,30],["up","north","jeep",20,15],["up","cubao","jeep",25,15],["ortigas","bgc","bus",20,20],["makati","bgc","bus",20,20],
-["taft","moa","jeep",15,15],["taft","naia","jeep",25,20],["moa","naia","bus",15,15],["pitx","naia","bus",20,20],["cubao","ortigas","jeep",25,15]];
+["fairview","north","bus",45,30],["fairview","novaliches","bus",20,20],["novaliches","north","bus",25,20],["up","north","jeep",20,15],["up","cubao","jeep",25,15],["cubao","ortigas","jeep",25,15],
+["ortigas","bgc","bus",20,20],["makati","bgc","bus",20,20],["taft","moa","jeep",15,15],["taft","naia","jeep",25,20],["moa","naia","bus",15,15],["pitx","naia","bus",20,20],["pitx","moa","bus",15,15],
+["valenzuela","monumento","bus",30,25],["valenzuela","malabon","jeep",30,20],["malabon","monumento","jeep",25,15],["navotas","malabon","jeep",15,15],["recto","manila","jeep",20,13],["manila","taft","jeep",25,15],
+["sanjuan","cubao","jeep",15,13],["sanjuan","ortigas","jeep",15,15],["sanjuan","mandaluyong","jeep",15,13],["mandaluyong","ortigas","jeep",15,13],["mandaluyong","makati","jeep",20,15],
+["pasig","ortigas","jeep",25,15],["pasig","santolan","jeep",25,15],["pasig","pateros","jeep",25,15],["pateros","bgc","jeep",20,15],
+["bicutan","bgc","bus",25,20],["bicutan","naia","bus",30,25],["bicutan","alabang","bus",30,25],
+["paranaque","pitx","jeep",25,15],["paranaque","naia","jeep",25,15],["paranaque","laspinas","jeep",25,15],["laspinas","pitx","bus",25,20],["laspinas","alabang","bus",35,25],["alabang","pitx","bus",45,35]];
 const ADJ={};E.forEach(e=>{(ADJ[e[0]]??=[]).push({to:e[1],e});(ADJ[e[1]]??=[]).push({to:e[0],e})});
 const $=s=>document.querySelector(s);let disc=false,rush=false,cur=null;
-const opts=Object.entries(P).map(([k,v])=>`<option value="${k}">${v}</option>`).join("");
+const cities=[...new Set(PL.map(p=>p[2]))].sort((a,b)=>a.localeCompare(b));
+const opts=cities.map(c=>`<optgroup label="${c}">${PL.filter(p=>p[2]===c).map(p=>`<option value="${p[0]}">${p[1]}</option>`).join("")}</optgroup>`).join("");
 $("#from").innerHTML=opts;$("#to").innerHTML=opts;$("#from").value="fairview";$("#to").value="makati";
 const rail=m=>["mrt3","lrt1","lrt2","carousel"].includes(m);
 function build(path){ // path: [{from,to,e}]
@@ -193,7 +206,7 @@ function find(a,b){
  const out=[];
  (function dfs(n,seen,path){
   if(n===b){out.push(path.slice());return}
-  if(path.length>=5)return;
+  if(path.length>=8)return;
   for(const x of ADJ[n]||[]){if(seen.has(x.to))continue;seen.add(x.to);path.push({from:n,to:x.to,e:x.e});dfs(x.to,seen,path);path.pop();seen.delete(x.to)}
  })(a,new Set([a]),[]);
  const rs=out.map(p=>{const legs=build(p);const x=legs.length-1;
@@ -223,30 +236,8 @@ $("#go").onclick=render;
 $("#swap").onclick=()=>{const a=$("#from").value;$("#from").value=$("#to").value;$("#to").value=a;render()};
 $("#disc").onclick=e=>{disc=!disc;e.target.setAttribute("aria-pressed",disc);$("#results").innerHTML&&render()};
 $("#rush").onclick=e=>{rush=!rush;e.target.setAttribute("aria-pressed",rush);$("#results").innerHTML&&render()};
-const C={fairview:[14.733,121.058],north:[14.6563,121.0306],up:[14.6538,121.0685],cubao:[14.62,121.053],ortigas:[14.5878,121.0567],bgc:[14.5507,121.0509],makati:[14.5547,121.0244],taft:[14.5378,121.0014],moa:[14.535,120.9822],naia:[14.5086,121.0194],pitx:[14.51,120.991],recto:[14.6035,120.983],monumento:[14.654,120.9838],santolan:[14.6228,121.086]};
-const px=(la,lo)=>[20+(lo-120.96)/.14*300,20+(14.75-la)/.27*560],g=n=>px(...C[n]);
+const px=(la,lo)=>[20+(lo-120.93)/.19*300,20+(14.77-la)/.37*600],g=n=>px(...C[n]);
 let RS=[],raf=0,me=null;
-function drawMap(r){
- cancelAnimationFrame(raf);
- const bay=[[14.62,120.96],[14.62,120.968],[14.6,120.972],[14.57,120.974],[14.55,120.975],[14.52,120.976],[14.49,120.975],[14.49,120.96]].map(a=>px(...a).join(",")).join(" ");
- const on=new Set(r.path.flatMap(s=>[s.from,s.to])),left=new Set(["north","makati","moa","pitx"]);
- const a=r.path[0].from,b=r.path[r.path.length-1].to,pts=[a,...r.path.map(s=>s.to)];
- let h=`<div class="top"><h2 style="margin:0;font-size:18px">🗺️ Mapa ng byahe</h2><span class="live"><i></i>LIVE SIM</span></div><svg viewBox="0 0 340 580" role="img" aria-label="Mapa ng ruta"><polygon points="${bay}" style="fill:#4aa3df;opacity:.25"/><text x="28" y="400" transform="rotate(-90 28 400)" style="font-style:italic;fill:#4aa3df">Manila Bay</text>`;
- E.forEach(e=>{const p=g(e[0]),q=g(e[1]);h+=`<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" style="stroke:var(--line)" stroke-width="3" stroke-linecap="round"/>`});
- r.path.forEach(s=>{const p=g(s.from),q=g(s.to),d=`x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke-linecap="round"`;h+=`<line ${d} style="stroke:var(--ink)" stroke-width="10"/><line ${d} stroke="${M[s.e[2]].c}" stroke-width="6"/>`});
- for(const k in C){const p=g(k),o=on.has(k),l=left.has(k);h+=`<circle cx="${p[0]}" cy="${p[1]}" r="${o?7:4}" style="fill:${o?"var(--card)":"var(--mut)"};stroke:var(--ink)" stroke-width="2"/><text class="${o?"on":""}" x="${p[0]+(l?-11:11)}" y="${p[1]+4}" text-anchor="${l?"end":"start"}">${P[k]}</text>`}
- const pa=g(a),pb=g(b);
- h+=`<text x="${pa[0]-6}" y="${pa[1]-12}" style="font-size:16px">🟢</text><text x="${pb[0]-8}" y="${pb[1]-12}" style="font-size:16px">📍</text>`;
- if(me){const m=px(...me);if(m[0]>0&&m[0]<340&&m[1]>0&&m[1]<580)h+=`<circle cx="${m[0]}" cy="${m[1]}" r="6" style="fill:var(--b);stroke:#fff" stroke-width="2"><animate attributeName="r" values="6;11;6" dur="1.6s" repeatCount="indefinite"/></circle>`}
- h+=`<g id="veh"><circle r="14" style="fill:var(--y);stroke:var(--ink)" stroke-width="2"/><text id="vt" text-anchor="middle" y="5" style="font-size:15px"></text></g></svg>`;
- h+=`<a class="chip gm" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&travelmode=transit&origin=${encodeURIComponent(P[a]+", Metro Manila")}&destination=${encodeURIComponent(P[b]+", Metro Manila")}">Buksan sa Google Maps ↗</a>`;
- $("#mapcard").innerHTML=h;
- const seg=[];let tot=0;
- for(let i=0;i<pts.length-1;i++){const p=g(pts[i]),q=g(pts[i+1]),l=Math.hypot(q[0]-p[0],q[1]-p[1]);seg.push({p,q,l,m:r.path[i].e[2]});tot+=l}
- const v=$("#veh"),vt=$("#vt"),put=(s,t)=>{v.setAttribute("transform",`translate(${s.p[0]+(s.q[0]-s.p[0])*t} ${s.p[1]+(s.q[1]-s.p[1])*t})`);vt.textContent=M[s.m].i};
- if(matchMedia("(prefers-reduced-motion: reduce)").matches){put(seg[0],0);return}
- const step=now=>{let d=(now%8000)/8000*tot;for(const s of seg){if(d<=s.l){put(s,d/s.l);break}d-=s.l}raf=requestAnimationFrame(step)};
- raf=requestAnimationFrame(step)}
 $("#loc").onclick=()=>{const m=$("#msg");if(!navigator.geolocation){m.textContent="Hindi supported ang location sa device na ito.";return}
  m.textContent="Hinahanap ang location mo...";
  navigator.geolocation.getCurrentPosition(p=>{me=[p.coords.latitude,p.coords.longitude];let best,d=1e9;for(const k in C){const q=(C[k][0]-me[0])**2+(C[k][1]-me[1])**2;if(q<d){d=q;best=k}}
@@ -259,10 +250,7 @@ const autoRush=()=>{const h=t0()/60;rush=(h>=7&&h<9)||(h>=17&&h<20);$("#rush").s
 const ORD={mrt3:["north","cubao","ortigas","makati","taft"],lrt1:["monumento","recto","taft","pitx"],lrt2:["recto","cubao","santolan"],carousel:["monumento","north","makati","pitx"]};
 const ENDS={mrt3:["North Avenue","Taft Avenue"],lrt1:["Fernando Poe Jr.","PITX / Baclaran"],lrt2:["Recto","Antipolo"],carousel:["Monumento","PITX"]};
 const dirOf=l=>ENDS[l.m][ORD[l.m].indexOf(l.to)>ORD[l.m].indexOf(l.from)?1:0];
-const POP=[["fairview","makati"],["up","bgc"],["cubao","naia"],["monumento","pitx"],["santolan","moa"]];
-function home(){view="list";searched=false;cancelAnimationFrame(raf);$("#formcard").hidden=false;
- $("#results").innerHTML=`<div class="card hm"><h2>Mga sikat na byahe</h2><p class="note">Pindutin para subukan agad, o ilagay ang sarili mong biyahe sa itaas.</p>${POP.map(([a,b],i)=>`<button class="pop" data-i="${i}"><span>${P[a]}</span><i>→</i><span>${P[b]}</span></button>`).join("")}</div>`;
- document.querySelectorAll(".pop").forEach(x=>x.onclick=()=>{const[a,b]=POP[+x.dataset.i];$("#from").value=a;$("#to").value=b;render()})}
+const POP=[["monumento","bgc"],["pasig","naia"],["valenzuela","makati"],["up","bgc"],["laspinas","cubao"]];
 function render(){
  view="list";searched=true;cancelAnimationFrame(raf);$("#formcard").hidden=false;
  const a=$("#from").value,b=$("#to").value,box=$("#results");ctx={a,b};
@@ -319,6 +307,32 @@ $("#rush").onclick=e=>{rush=!rush;e.currentTarget.setAttribute("aria-pressed",ru
 $("#swap").onclick=()=>{const a=$("#from").value;$("#from").value=$("#to").value;$("#to").value=a;redo()};
 $("#dep").onchange=()=>{autoRush();redo()};
 {const d=new Date();$("#dep").value=pad(d.getHours())+":"+pad(d.getMinutes());autoRush()}
+const LS={north:"t",monumento:"b",malabon:"b",navotas:"t",ortigas:"t",santolan:"t",bgc:"b",novaliches:"l",makati:"l",moa:"l",pitx:"l",laspinas:"l",manila:"l",mandaluyong:"l",sanjuan:"l",cubao:"l"};
+let tapA=null;
+function mapSvg(r){
+ const bay=[[14.64,120.93],[14.635,120.945],[14.61,120.965],[14.59,120.969],[14.57,120.973],[14.55,120.975],[14.52,120.977],[14.47,120.978],[14.43,120.97],[14.4,120.96],[14.4,120.93]].map(a=>px(...a).join(",")).join(" ");
+ const on=r?new Set(r.path.flatMap(s=>[s.from,s.to])):new Set();
+ let h=`<svg viewBox="0 0 340 640" role="img" aria-label="Mapa ng Metro Manila"><polygon points="${bay}" style="fill:#4aa3df;opacity:.25"/><text x="46" y="520" transform="rotate(-90 46 520)" style="font-style:italic;fill:#4aa3df">Manila Bay</text>`;
+ E.forEach(e=>{const p=g(e[0]),q=g(e[1]);h+=`<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" style="stroke:var(--line)" stroke-width="3" stroke-linecap="round"/>`});
+ if(r)r.path.forEach(s=>{const p=g(s.from),q=g(s.to),d=`x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke-linecap="round"`;h+=`<line ${d} style="stroke:var(--ink)" stroke-width="10"/><line ${d} stroke="${M[s.e[2]].c}" stroke-width="6"/>`});
+ for(const k in C){const p=g(k),o=on.has(k),s=LS[k]||"r",x=p[0]+(s==="l"?-11:s==="r"?11:0),y=p[1]+(s==="t"?-11:s==="b"?17:4);
+  h+=`<g data-k="${k}"${r?"":' style="cursor:pointer"'}><circle cx="${p[0]}" cy="${p[1]}" r="${o?7:r?4:6}" style="fill:${o?"var(--card)":r?"var(--mut)":"var(--y)"};stroke:var(--ink)" stroke-width="2"/><text class="${o||!r?"on":""}" x="${x}" y="${y}" text-anchor="${s==="l"?"end":s==="r"?"start":"middle"}">${P[k]}</text></g>`}
+ if(r){const pa=g(r.path[0].from),pb=g(r.path[r.path.length-1].to);
+  h+=`<text x="${pa[0]-8}" y="${pa[1]-12}" style="font-size:16px">🟢</text><text x="${pb[0]-8}" y="${pb[1]-12}" style="font-size:16px">📍</text>`;
+  h+=`<g id="veh"><circle r="14" style="fill:var(--y);stroke:var(--ink)" stroke-width="2"/><text id="vt" text-anchor="middle" y="5" style="font-size:15px"></text></g>`}
+ if(me){const m=px(...me);if(m[0]>0&&m[0]<340&&m[1]>0&&m[1]<640)h+=`<circle cx="${m[0]}" cy="${m[1]}" r="6" style="fill:var(--b);stroke:#fff" stroke-width="2"><animate attributeName="r" values="6;11;6" dur="1.6s" repeatCount="indefinite"/></circle>`}
+ return h+"</svg>"}
+function drawMap(r){
+ const a=r.path[0].from,b=r.path[r.path.length-1].to;
+ $("#mapcard").innerHTML=`<div class="top"><h2 style="margin:0;font-size:18px">🗺️ Mapa ng byahe</h2><span class="live"><i></i>LIVE SIM</span></div>${mapSvg(r)}<a class="chip gm" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&travelmode=transit&origin=${encodeURIComponent(P[a]+", Metro Manila")}&destination=${encodeURIComponent(P[b]+", Metro Manila")}">Buksan sa Google Maps ↗</a>`}
+function home(){view="list";searched=false;tapA=null;cancelAnimationFrame(raf);$("#formcard").hidden=false;
+ $("#results").innerHTML=`<div class="card hm"><h2>Mga sikat na byahe</h2><p class="note">Pindutin para subukan agad, o ilagay ang sarili mong biyahe sa itaas.</p>${POP.map(([a,b],i)=>`<button class="pop" data-i="${i}"><span>${P[a]}</span><i>→</i><span>${P[b]}</span></button>`).join("")}</div><div class="card"><h2>🗺️ Mapa ng Metro Manila</h2><p class="note" id="tapmsg">Pindutin ang pinagmumulan, tapos ang pupuntahan.</p><div id="netmap">${mapSvg(null)}</div></div>`;
+ document.querySelectorAll(".pop").forEach(x=>x.onclick=()=>{const[a,b]=POP[+x.dataset.i];$("#from").value=a;$("#to").value=b;render()});
+ $("#netmap").onclick=e=>{const n=e.target.closest("[data-k]");if(!n)return;const k=n.dataset.k;
+  if(!tapA){tapA=k;$("#from").value=k;$("#tapmsg").textContent=`Galing: ${P[k]}. Piliin na ang pupuntahan.`}
+  else if(k!==tapA){$("#from").value=tapA;$("#to").value=k;tapA=null;render()}}}
+$("#cities").innerHTML=cities.map(c=>`<span>${c}</span>`).join("");
+$("#ccount").textContent=`${PL.length} lugar sa ${cities.length} lungsod at bayan, kasama ang Pasig, Taguig at Caloocan.`;
 drawFavs();home();route();
 </script>
 </body>
