@@ -1,57 +1,136 @@
 /* ============ TRAFFIC HEURISTIC ENGINE ============ */
-// Base sa oras ng araw at araw ng linggo. Hindi ito live, pero mas accurate kaysa static.
 function getTrafficMultiplier(departureMinutes) {
   const now = new Date();
-  const day = now.getDay(); // 0 = Sunday, 6 = Saturday
+  const day = now.getDay();
   const hour = departureMinutes / 60;
-
-  // Weekend: mas magaan ang traffic
   if (day === 0 || day === 6) {
-    if (hour >= 10 && hour < 20) return 1.15; // malls / gimik
+    if (hour >= 10 && hour < 20) return 1.15;
     return 0.9;
   }
-
-  // Weekday rush hours (base sa MMDA observations)
-  if ((hour >= 7 && hour < 9) || (hour >= 17 && hour < 20)) {
-    return 1.55; // matinding traffic
-  }
+  if ((hour >= 7 && hour < 9) || (hour >= 17 && hour < 20)) return 1.55;
   if (hour >= 9 && hour < 12) return 1.25;
-  if (hour >= 12 && hour < 14) return 1.15; // lunch
+  if (hour >= 12 && hour < 14) return 1.15;
   if (hour >= 14 && hour < 17) return 1.2;
   if (hour >= 20 && hour < 22) return 1.05;
-  return 0.85; // gabi / madaling araw
+  return 0.85;
 }
 
-// I-apply sa bawat leg bago i-render
 function applyTrafficToRoute(route, departureMinutes) {
   const mult = getTrafficMultiplier(departureMinutes);
   let totalMin = 0;
   route.legs.forEach(leg => {
-    // Ang rail ay hindi gaano apektado ng road traffic
     const isRail = ["mrt3", "lrt1", "lrt2", "carousel"].includes(leg.m);
-    const factor = isRail ? 1.0 : mult; // rail = fixed, road = dynamic
+    const factor = isRail ? 1.0 : mult;
     leg.min = Math.round(leg.min * factor);
     totalMin += leg.min;
   });
-  // Transfer walk time (6 min per transfer) — apektado rin ng traffic kung lalakad sa labas
   const transferTime = (route.legs.length - 1) * Math.round(6 * mult);
   route.min = totalMin + transferTime;
-  route.trafficMultiplier = mult; // i-save para ma-display
+  route.trafficMultiplier = mult;
   return route;
 }
 
 /* ============ FULL METRO MANILA DATA ============ */
 const Hubs = [
-["north","SM North EDSA","Quezon City",14.6563,121.0306],["cubao","Cubao","Quezon City",14.62,121.053],
-["ortigas","Ortigas Center","Pasig",14.5878,121.0567],["makati","Makati (Ayala)","Makati",14.5547,121.0244],
-["taft","Taft Ave","Pasay",14.5378,121.0014],["monumento","Caloocan (Monumento)","Caloocan",14.654,120.9838],
-["recto","Recto","Manila",14.6035,120.983],["pitx","PITX","Parañaque",14.51,120.991],
-["baclaan","Baclaran","Pasay",14.537,120.997],["santolan","Marikina (Santolan)","Marikina",14.6228,121.086],
-["shaw","MRT Shaw Blvd","Mandaluyong",14.581,121.053],["boni","MRT Boni Ave","Mandaluyong",14.573,121.048],
-["rtu","RTU Mandaluyong","Mandaluyong",14.568,121.043],["lifehomes","Lifehomes Pasig (Rosario)","Pasig",14.580,121.077],
-["parklea","Parklea Mandaluyong","Mandaluyong",14.575,121.045]
+// Primary hubs
+["north","SM North EDSA","Quezon City",14.6563,121.0306],
+["cubao","Cubao","Quezon City",14.62,121.053],
+["ortigas","Ortigas Center","Pasig",14.5878,121.0567],
+["makati","Makati (Ayala)","Makati",14.5547,121.0244],
+["taft","Taft Ave","Pasay",14.5378,121.0014],
+["monumento","Caloocan (Monumento)","Caloocan",14.654,120.9838],
+["recto","Recto","Manila",14.6035,120.983],
+["pitx","PITX","Parañaque",14.51,120.991],
+["baclaan","Baclaran","Pasay",14.537,120.997],
+["santolan","Marikina (Santolan)","Marikina",14.6228,121.086],
+["shaw","MRT Shaw Blvd","Mandaluyong",14.581,121.053],
+["boni","MRT Boni Ave","Mandaluyong",14.573,121.048],
+["rtu","RTU Mandaluyong","Mandaluyong",14.568,121.043],
+["lifehomes","Lifehomes Pasig (Rosario)","Pasig",14.580,121.077],
+["parklea","Parklea Mandaluyong","Mandaluyong",14.575,121.045],
+// Expanded hubs based on route list
+["alabang","Alabang","Muntinlupa",14.42,121.04],
+["divisoria","Divisoria","Manila",14.602,120.974],
+["novaliches","Novaliches (TP)","Quezon City",14.726,121.037],
+["quiapo","Quiapo","Manila",14.598,120.985],
+["blumentritt","Blumentritt","Manila",14.619,120.984],
+["libertad","Libertad","Pasay",14.545,121.010],
+["paco","Paco","Manila",14.579,120.996],
+["pier_south","Pier South","Manila",14.586,120.972],
+["sta_cruz","Sta. Cruz","Manila",14.599,120.980],
+["tm_kalaw","T.M. Kalaw","Manila",14.580,120.981],
+["pasig_tp","Pasig (TP)","Pasig",14.575,121.085],
+["angono","Angono","Rizal",14.525,121.155],
+["antipolo","Antipolo","Rizal",14.585,121.176],
+["taytay","Taytay","Rizal",14.570,121.135],
+["binangonan","Binangonan","Rizal",14.465,121.190],
+["cainta","Cainta","Rizal",14.580,121.120],
+["marikina_tp","Marikina (TP)","Marikina",14.632,121.098],
+["san_mateo","San Mateo","Rizal",14.695,121.120],
+["montalban","Rodriguez (Montalban)","Rizal",14.730,121.145],
+["sucat","Sucat","Parañaque",14.455,121.024],
+["fti","FTI","Taguig",14.520,121.050],
+["nichols","Nichols","Taguig",14.510,121.020],
+["signal_village","Signal Village","Taguig",14.510,121.065],
+["pasay_rtda","Pasay Rotonda","Pasay",14.537,121.001],
+["edsa_shaw","EDSA/Shaw","Mandaluyong",14.581,121.053],
+["edsa_north","EDSA/North Ave.","Quezon City",14.656,121.031],
+["lagro","Lagro","Quezon City",14.740,121.065],
+["fairview","Fairview","Quezon City",14.733,121.058],
+["bagong_silang","Bagong Silang","Caloocan",14.750,121.020],
+["camarin","Camarin","Caloocan",14.746,121.017],
+["malinta","Malinta","Valenzuela",14.700,120.990],
+["karuhatan","Karuhatan","Valenzuela",14.690,120.980],
+["navotas","Navotas","Navotas",14.667,120.942],
+["malabon","Malabon","Malabon",14.6625,120.957],
+["valenzuela","Valenzuela","Valenzuela",14.7011,120.983],
+["pasig_caruncho","Pasig (Caruncho)","Pasig",14.573,121.085],
+["pasig_rosales","Pasig (P. Rosales)","Pasig",14.568,121.082],
+["mandaluyong_cityhall","Mandaluyong City Hall","Mandaluyong",14.579,121.036],
+["one_ayala","One Ayala","Makati",14.553,121.028],
+["makati_sanjose","Makati (San Jose St)","Makati",14.558,121.035],
+["makati_sierramadre","Makati (Sierra Madre)","Makati",14.567,121.042],
+["shaw_crossing","Shaw Crossing","Mandaluyong",14.587,121.058],
+["pasig_ortigas_raymundo","Pasig (C. Raymundo)","Pasig",14.576,121.080],
+["san_juan_ndomingo","San Juan (N. Domingo)","San Juan",14.605,121.035],
+["mandaluyong_mayflower","Mandaluyong (Mayflower)","Mandaluyong",14.578,121.047],
+["pasig_dr_garcia","Pasig (Dr. Garcia)","Pasig",14.571,121.084],
+["pasig_mabini","Pasig (A. Mabini)","Pasig",14.572,121.087],
+["muntinlupa","Muntinlupa","Muntinlupa",14.415,121.040],
+["laspinas","Las Piñas","Las Piñas",14.450,120.993],
+["zapote","Zapote","Las Piñas",14.470,120.980],
+["bacoor","Bacoor","Cavite",14.460,120.940],
+["dasmarinas","Dasmariñas","Cavite",14.330,120.940],
+["gma","GMA","Cavite",14.300,121.000],
+["carmona","Carmona","Cavite",14.310,121.050],
+["binan","Binan","Laguna",14.330,121.080],
+["sta_rosa","Sta. Rosa","Laguna",14.310,121.100],
+["calamba","Calamba","Laguna",14.210,121.170],
+["san_pedro","San Pedro","Laguna",14.360,121.050],
+["pacita","Pacita","Laguna",14.340,121.050],
+// BAGONG HUBS
+["ususan","Ususan (Taguig)","Taguig",14.535,121.068],
+["pasig_palengke","Pasig Palengke","Pasig",14.565,121.085],
+["tagig_tp","Taguig (TP)","Taguig",14.520,121.070],
+["bicutan","Bicutan","Taguig",14.495,121.051],
+["pateros","Pateros","Pateros",14.544,121.069],
+["upper_bicutan","Upper Bicutan","Taguig",14.505,121.060],
+["western_bicutan","Western Bicutan","Taguig",14.515,121.035],
+["lower_bicutan","Lower Bicutan","Taguig",14.500,121.045],
+["fti_taguig","FTI Taguig","Taguig",14.520,121.050],
+["tipas","Tipas (Taguig)","Taguig",14.530,121.075],
+// Jeep hubs
+["sangandaan","Sangandaan","Caloocan",14.667,121.007],
+["balintawak","Balintawak","Quezon City",14.657,121.002],
+["bagong_barrio","Bagong Barrio","Caloocan",14.658,120.996],
+["lawang_bato","Lawang Bato","Valenzuela",14.730,120.960],
+["paso_de_blas","Paso de Blas","Valenzuela",14.705,120.980],
+["punturin","Punturin","Valenzuela",14.725,120.990],
+["mapulang_lupa","Mapulang Lupa","Valenzuela",14.690,120.985],
+["bagbaguin","Bagbaguin","Valenzuela",14.710,120.990]
 ];
 
+/* ============ BARANGAYS ============ */
 const Barangays = {
   "Caloocan": Array.from({length: 188}, (_,i) => "Barangay " + (i+1)),
   "Las Piñas": ["Alonzo","CAA-BF International","Daniel Fajardo","Elias Aldana","Ilaya","Manuyo Uno","Manuyo Dos","Pamplona Uno","Pamplona Dos","Pamplona Tres","Pilar","Pulang Lupa Uno","Pulang Lupa Dos","Talon Uno","Talon Dos","Talon Tres","Talon Cuatro","Talon Singko","Zapote"],
@@ -131,15 +210,124 @@ bus:{n:"Bus",c:"#5b9bff",i:"🚌"},carousel:{n:"EDSA Carousel",c:"#ff8a3d",i:"�
 mrt3:{n:"MRT-3",c:"#3b82f6",i:"🚆"},lrt1:{n:"LRT-1",c:"#34c77b",i:"🚇"},lrt2:{n:"LRT-2",c:"#b57bff",i:"🚈"}
 };
 
+/* ============ EDGES — FULL LIST ============ */
 const E=[
+// RAIL
 ["north","cubao","mrt3",12,20],["cubao","ortigas","mrt3",7,16],["ortigas","makati","mrt3",13,20],["makati","taft","mrt3",10,16],
 ["monumento","recto","lrt1",25,25],["recto","taft","lrt1",20,25],["taft","baclaan","lrt1",5,12],["baclaan","pitx","lrt1",6,12],
 ["recto","cubao","lrt2",22,25],["cubao","santolan","lrt2",15,20],["santolan","marikina","lrt2",12,18],
 ["monumento","north","carousel",15,15],["north","makati","carousel",45,35],["makati","taft","carousel",15,15],["taft","pitx","carousel",25,20],
-["fairview","north","bus",45,30],["novaliches","north","bus",25,20],
-["lifehomes","rosario","walk",1,0],["lifehomes","shaw","jeep",5.5],["lifehomes","ortigas","jeep",3.5],
-["rosario","shaw","jeep",4.2],["shaw","boni","mrt3",2,13],["boni","rtu","tricycle",1.5],["boni","parklea","tricycle",1.2],
-["parklea","rtu","tricycle",1.5],["boni","guadalupe","mrt3",2,13],["shaw","boni","carousel",2,15]
+
+/* ===== JEEP ROUTES (Alabang / South) ===== */
+["alabang","baclaan","jeep",18],["alabang","pasay_rtda","jeep",20],["alabang","sucat","jeep",6],["alabang","muntinlupa","jeep",3],["alabang","signal_village","jeep",10],["alabang","fti","jeep",12],["alabang","laspinas","jeep",8],["alabang","zapote","jeep",9],["alabang","binan","jeep",15],["alabang","sta_rosa","jeep",18],["alabang","calamba","jeep",25],["alabang","san_pedro","jeep",12],["alabang","pacita","jeep",10],["alabang","gma","jeep",15],["alabang","carmona","jeep",12],["alabang","dasmarinas","jeep",18],
+/* ===== JEEP ROUTES (Baclaran / Pasay) ===== */
+["baclaan","blumentritt","jeep",8],["baclaan","divisoria","jeep",10],["baclaan","sta_cruz","jeep",9],["baclaan","libertad","jeep",4],["baclaan","paco","jeep",7],["baclaan","quiapo","jeep",8],["baclaan","bacoor","jeep",10],["baclaan","zapote","jeep",8],["baclaan","laspinas","jeep",12],["baclaan","sucat","jeep",15],["baclaan","nichols","jeep",6],
+/* ===== JEEP ROUTES (Cubao) ===== */
+["cubao","quiapo","jeep",10],["cubao","recto","jeep",12],["cubao","divisoria","jeep",14],["cubao","sta_cruz","jeep",11],["cubao","pier_south","jeep",15],["cubao","tm_kalaw","jeep",14],["cubao","fairview","jeep",12],["cubao","lagro","jeep",15],["cubao","novaliches","jeep",14],["cubao","angono","jeep",12],["cubao","antipolo","jeep",15],["cubao","taytay","jeep",12],["cubao","cainta","jeep",10],["cubao","marikina_tp","jeep",10],["cubao","san_mateo","jeep",12],["cubao","montalban","jeep",15],["cubao","pasig_tp","jeep",12],["cubao","santolan","jeep",6],
+/* ===== JEEP ROUTES (Divisoria) ===== */
+["divisoria","monumento","jeep",10],["divisoria","malinta","jeep",12],["divisoria","navotas","jeep",10],["divisoria","malabon","jeep",10],["divisoria","karuhatan","jeep",11],["divisoria","sangandaan","jeep",9],["divisoria","pier_south","jeep",5],["divisoria","sta_cruz","jeep",3],["divisoria","quiapo","jeep",4],["divisoria","blumentritt","jeep",5],["divisoria","tm_kalaw","jeep",5],["divisoria","sanjuan","jeep",8],
+/* ===== JEEP ROUTES (Monumento) ===== */
+["monumento","navotas","jeep",8],["monumento","malabon","jeep",8],["monumento","valenzuela","jeep",10],["monumento","malinta","jeep",8],["monumento","karuhatan","jeep",7],["monumento","pasay_rtda","jeep",15],["monumento","baclaan","jeep",14],["monumento","pier_south","jeep",10],["monumento","tm_kalaw","jeep",11],["monumento","libertad","jeep",13],["monumento","recto","jeep",9],["monumento","blumentritt","jeep",7],
+/* ===== JEEP ROUTES (Novaliches) ===== */
+["novaliches","fairview","jeep",6],["novaliches","lagro","jeep",5],["novaliches","north","jeep",10],["novaliches","bagong_silang","jeep",8],["novaliches","camarin","jeep",7],["novaliches","montalban","jeep",12],["novaliches","san_mateo","jeep",10],
+/* ===== JEEP ROUTES (Pasig) ===== */
+["pasig_tp","ortigas","jeep",5],["pasig_tp","shaw","jeep",6],["pasig_tp","quiapo","jeep",12],["pasig_tp","pateros","jeep",8],["pasig_tp","taytay","jeep",8],["pasig_tp","angono","jeep",10],["pasig_tp","ugong","jeep",4],["pasig_tp","cainta","jeep",7],["pasig_tp","marikina_tp","jeep",10],
+/* ===== JEEP ROUTES (Quiapo) ===== */
+["quiapo","sta_cruz","jeep",3],["quiapo","blumentritt","jeep",5],["quiapo","pier_south","jeep",5],["quiapo","tm_kalaw","jeep",4],["quiapo","paco","jeep",5],["quiapo","sanjuan","jeep",4],["quiapo","recto","jeep",3],["quiapo","divisoria","jeep",4],
+/* ===== JEEP ROUTES (Blumentritt) ===== */
+["blumentritt","sta_cruz","jeep",3],["blumentritt","pier_south","jeep",6],["blumentritt","divisoria","jeep",5],["blumentritt","recto","jeep",4],["blumentritt","paco","jeep",5],["blumentritt","sanjuan","jeep",4],
+/* ===== JEEP ROUTES (EDSA/Shaw) ===== */
+["edsa_shaw","pasig_tp","jeep",6],["edsa_shaw","pateros","jeep",5],["edsa_shaw","taytay","jeep",7],["edsa_shaw","angono","jeep",9],["edsa_shaw","antipolo","jeep",10],["edsa_shaw","binangonan","jeep",12],["edsa_shaw","quiapo","jeep",10],["edsa_shaw","ortigas","jeep",3],["edsa_shaw","san_juan_ndomingo","jeep",5],
+/* ===== JEEP ROUTES (Mandaluyong) ===== */
+["mandaluyong_cityhall","one_ayala","jeep",6],["mandaluyong_cityhall","shaw","jeep",5],["mandaluyong_cityhall","boni","jeep",4],["mandaluyong_cityhall","sanjuan","jeep",6],["mandaluyong_mayflower","shaw","jeep",4],["mandaluyong_mayflower","pasig_mabini","jeep",6],["pasig_mabini","pasig_dr_garcia","jeep",2],["pasig_dr_garcia","pasig_caruncho","jeep",2],
+/* ===== JEEP ROUTES (Lifehomes) ===== */
+["lifehomes","ortigas","jeep",3.5],["lifehomes","pasig_ortigas_raymundo","jeep",2],["lifehomes","pasig_caruncho","jeep",3],["lifehomes","pasig_sandoval","jeep",2.5],["lifehomes","pasig_rosales","jeep",2],["lifehomes","shaw","jeep",5.5],
+/* ===== JEEP ROUTES (Shaw) ===== */
+["shaw","makati_sierramadre","jeep",5],["makati_sierramadre","makati","jeep",3],["shaw","san_juan_ndomingo","jeep",5],["shaw","ortigas","jeep",4],["shaw","pasig_tp","jeep",6],
+/* ===== JEEP ROUTES (San Juan) ===== */
+["san_juan_ndomingo","sanjuan","jeep",2],["san_juan_ndomingo","cubao","jeep",6],["san_juan_ndomingo","quiapo","jeep",7],["san_juan_ndomingo","divisoria","jeep",8],
+/* ===== JEEP ROUTES (Taguig) ===== */
+["fti","signal_village","jeep",5],["fti","sucat","jeep",8],["fti","pasay_rtda","jeep",10],["fti","baclaan","jeep",12],["signal_village","pasay_rtda","jeep",8],["nichols","pasay_rtda","jeep",5],["nichols","baclaan","jeep",6],["nichols","fti","jeep",4],
+/* ===== JEEP ROUTES (Malabon/Navotas) ===== */
+["malabon","navotas","jeep",5],["malabon","monumento","jeep",8],["navotas","monumento","jeep",8],["navotas","divisoria","jeep",10],["navotas","baclaan","jeep",12],
+/* ===== JEEP ROUTES (Valenzuela) ===== */
+["valenzuela","monumento","jeep",10],["valenzuela","malinta","jeep",5],["malinta","monumento","jeep",8],["malinta","karuhatan","jeep",4],["karuhatan","monumento","jeep",7],["karuhatan","divisoria","jeep",11],
+/* ===== JEEP ROUTES (Marikina) ===== */
+["marikina_tp","cubao","jeep",10],["marikina_tp","santolan","jeep",5],["marikina_tp","pasig_tp","jeep",10],["marikina_tp","antipolo","jeep",8],["marikina_tp","san_mateo","jeep",7],["marikina_tp","montalban","jeep",10],
+/* ===== JEEP ROUTES (Antipolo/Rizal) ===== */
+["antipolo","cubao","jeep",15],["antipolo","edsa_shaw","jeep",10],["antipolo","pasig_tp","jeep",10],["antipolo","marikina_tp","jeep",8],["antipolo","cainta","jeep",6],["taytay","pasig_tp","jeep",8],["taytay","edsa_shaw","jeep",7],["taytay","cubao","jeep",12],["cainta","cubao","jeep",10],["cainta","ortigas","jeep",6],["cainta","pasig_tp","jeep",7],["angono","edsa_shaw","jeep",9],["angono","pasig_tp","jeep",10],["angono","cubao","jeep",12],["binangonan","edsa_shaw","jeep",12],["san_mateo","cubao","jeep",12],["montalban","cubao","jeep",15],
+/* ===== JEEP ROUTES (Lagro/Fairview) ===== */
+["lagro","fairview","jeep",3],["lagro","north","jeep",8],["fairview","north","jeep",7],["fairview","cubao","jeep",12],["fairview","novaliches","jeep",6],
+/* ===== JEEP ROUTES (Kalentong/Boni) ===== */
+["boni","rtu","walk",1,0],["boni","parklea","tricycle",1.2],["parklea","rtu","tricycle",1.5],["boni","shaw","mrt3",2,13],["boni","guadalupe","mrt3",2,13],["boni","mandaluyong_cityhall","jeep",3],
+/* ===== JEEP ROUTES (Pasig local) ===== */
+["pasig_sandoval","shaw","jeep",4.5],["pasig_sandoval","ortigas","jeep",3],["pasig_ortigas_raymundo","shaw_crossing","jeep",6.5],["pasig_ortigas_raymundo","ortigas","jeep",2.5],["pasig_caruncho","shaw_crossing","jeep",5.5],["pasig_caruncho","ortigas","jeep",4],["pasig_rosales","makati_sanjose","jeep",8],["pasig_rosales","pateros","jeep",4],["one_ayala","makati","walk",1,0],
+
+/* ===== DIRECT ROUTES (BAGONG DAGDAG) ===== */
+["lifehomes","pasig_palengke","jeep",3.5],
+["pasig_palengke","ususan","jeep",6],
+["pasig_palengke","pasig_tp","jeep",1.5],
+["pasig_palengke","pasig_caruncho","jeep",2],
+["pasig_palengke","pateros","jeep",5],
+["pasig_palengke","tagig_tp","jeep",6],
+["ususan","tagig_tp","jeep",3],
+["ususan","bicutan","jeep",4],
+["ususan","upper_bicutan","jeep",3],
+["ususan","western_bicutan","jeep",5],
+["ususan","lower_bicutan","jeep",4],
+["ususan","fti_taguig","jeep",5],
+["ususan","tipas","jeep",3],
+["tagig_tp","bicutan","jeep",3],
+["tagig_tp","pateros","jeep",4],
+["tagig_tp","tipas","jeep",3],
+["bicutan","upper_bicutan","jeep",2],
+["bicutan","lower_bicutan","jeep",2],
+["upper_bicutan","western_bicutan","jeep",3],
+["lower_bicutan","western_bicutan","jeep",3],
+["western_bicutan","fti_taguig","jeep",3],
+["tipas","pateros","jeep",2],
+["tipas","pasig_palengke","jeep",4],
+
+/* ===== VALENZUELA LOCAL JEEP ===== */
+["karuhatan","bagbaguin","jeep",4],
+["karuhatan","mapulang_lupa","jeep",4],
+["karuhatan","paso_de_blas","jeep",5],
+["karuhatan","punturin","jeep",6],
+["karuhatan","lawang_bato","jeep",8],
+["bagbaguin","malinta","jeep",4],
+["bagbaguin","paso_de_blas","jeep",4],
+["punturin","lawang_bato","jeep",3],
+["punturin","paso_de_blas","jeep",3],
+
+/* ===== CALOOCAN LOCAL JEEP ===== */
+["monumento","sangandaan","jeep",6],
+["sangandaan","bagong_barrio","jeep",4],
+["bagong_barrio","balintawak","jeep",3],
+["balintawak","monumento","jeep",7],
+["sangandaan","divisoria","jeep",9],
+
+/* ===== STA. CRUZ / LIBERTAD ===== */
+["sta_cruz","libertad","jeep",6],
+["libertad","paco","jeep",5],
+["libertad","tm_kalaw","jeep",6],
+["libertad","pier_south","jeep",7],
+["paco","pier_south","jeep",6],
+["paco","tm_kalaw","jeep",4],
+
+/* ===== MANDALUYONG / PASIG ===== */
+["mandaluyong_cityhall","pasig_palengke","jeep",8],
+["mandaluyong_cityhall","pasig_caruncho","jeep",7],
+["mandaluyong_mayflower","pasig_caruncho","jeep",7],
+["boni","pasig_caruncho","jeep",8],
+
+/* ===== CUBAO DIRECT JEEP ===== */
+["cubao","mandaluyong_cityhall","jeep",10],
+["cubao","pasig_palengke","jeep",12],
+
+/* ===== TAGUIG DIRECT ===== */
+["bicutan","tagig_tp","jeep",4],
+["bicutan","pateros","jeep",5],
+["fti_taguig","pateros","jeep",5]
 ];
 
 E.forEach(e => {
@@ -194,7 +382,7 @@ function setupSearch(inputId, resId, hiddenId, defaultText) {
         input.value = m.name + ", " + m.city;
         hidden.value = m.id;
         res.classList.remove("on");
-        redo(); // Auto-refresh ETA kapag nagpalit ng lugar
+        redo();
       };
       res.appendChild(div);
     });
@@ -204,10 +392,10 @@ function setupSearch(inputId, resId, hiddenId, defaultText) {
   document.addEventListener("click", (e)=>{ if(!input.contains(e.target) && !res.contains(e.target)) res.classList.remove("on"); });
 }
 
-setupSearch("from", "from-res", "from-val", "Fairview, Quezon City");
-setupSearch("to", "to-res", "to-val", "Makati (Ayala)");
-$("#from-val").value = "fairview";
-$("#to-val").value = "makati";
+setupSearch("from", "from-res", "from-val", "Lifehomes Pasig (Rosario)");
+setupSearch("to", "to-res", "to-val", "Ususan (Taguig)");
+$("#from-val").value = "lifehomes";
+$("#to-val").value = "ususan";
 
 /* ============ I18N ============ */
 const I18N={
@@ -307,24 +495,35 @@ function dijkstraFrom(a,b,costFn){
 }
 
 function find(a,b,depMinutes){
- const fastest=dijkstraFrom(a,b,e=>e[3]),cheapest=dijkstraFrom(a,b,e=>e[4]),fewest=dijkstraFrom(a,b,e=>1+(rail(e[2])?0:0.1));
+ const fastestJeep = dijkstraFrom(a,b,e=>{
+   const isRail = rail(e[2]);
+   return isRail ? e[3] * 1.3 : e[3];
+ });
+ const cheapestJeep = dijkstraFrom(a,b,e=>{
+   const isRail = rail(e[2]);
+   return isRail ? e[4] * 1.2 : e[4];
+ });
+ const fewestTransfers = dijkstraFrom(a,b,e=>{
+   const isRail = rail(e[2]);
+   const isJeep = e[2]==="jeep";
+   return isJeep ? 0.5 : (isRail ? 1.5 : 1);
+ });
+
  const assemble=(path)=>{
   if(!path)return null;const legs=build(path);let min=legs.reduce((s,l)=>s+l.min,0)+(legs.length-1)*6;
   let fare=legs.reduce((s,l)=>s+l.fare,0);if(disc)fare=Math.round(fare*.8);
   const route = {legs,min,fare,x:legs.length-1,path,sig:legs.map(l=>l.m+l.to).join()};
-  // I-apply ang traffic multiplier base sa oras ng alis
   return applyTrafficToRoute(route, depMinutes);
  };
  const results=[],seen=new Set();const add=(path,tag)=>{const r=assemble(path);if(!r||seen.has(r.sig))return;seen.add(r.sig);results.push({r,tags:[tag]})};
- add(fastest,T("fastest"));add(cheapest,T("cheapest"));add(fewest,T("fewest"));
+ add(fastestJeep,T("fastest"));add(cheapestJeep,T("cheapest"));add(fewestTransfers,T("fewest"));
  if(results.length<2){
-  const hubs=["north","cubao","ortigas","makati","taft","recto","monumento","pitx","shaw","boni"];
+  const hubs=["north","cubao","ortigas","makati","taft","recto","monumento","pitx","shaw","boni","alabang","divisoria","quiapo","blumentritt","pasig_tp","edsa_shaw","mandaluyong_cityhall","pasig_palengke","ususan"];
   for(const h of hubs){
    if(h===a||h===b)continue;const l1=dijkstraFrom(a,h,e=>e[3]),l2=dijkstraFrom(h,b,e=>e[3]);
    if(l1&&l2){const merged=[...l1,...l2];const r=assemble(merged);if(r&&!seen.has(r.sig)){seen.add(r.sig);results.push({r,tags:[T("via")+P[h]]})}}
   }
  }
- // I-sort base sa dynamic na min
  results.sort((a,b)=>a.r.min - b.r.min);
  return results;
 }
@@ -419,7 +618,7 @@ function drawMap(r){
   <div style="padding:0 16px 16px;text-align:center"><a class="chip gm" style="font-size:13px;display:inline-flex;align-items:center;gap:6px" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&travelmode=transit&origin=${sAddr}&destination=${dAddr}">${T("openGM")}</a></div>`;
 }
 
-const POP=[["lifehomes","rtu"],["monumento","bgc"],["rosario","naia"],["valenzuela","makati"],["up","bgc"]];
+const POP=[["lifehomes","ususan"],["lifehomes","rtu"],["monumento","bgc"],["rosario","naia"],["valenzuela","makati"]];
 
 function home(){view="list";searched=false;tapA=null;cancelAnimationFrame(raf);$("#formcard").hidden=false;
  $("#results").innerHTML=`<div class="card"><h2>${T("popular")}</h2><p class="note">${T("popularNote")}</p>${POP.map(([a,b],i)=>`<button class="pop" data-i="${i}"><span>${P[a]}</span><i>→</i><span>${P[b]}</span></button>`).join("")}</div>`;
@@ -436,7 +635,7 @@ $("#start").onclick=$("#start2").onclick=()=>{location.hash="dashboard"};
 $("#home").onclick=()=>{location.hash=""};
 $("#lf").innerHTML=`<optgroup label="Search Barangay">${SearchData.map(d=>`<option value="${d.id}">${d.name}, ${d.city}</option>`).join("")}</optgroup>`;
 $("#lt").innerHTML=$("#lf").innerHTML;
-$("#lf").value="fairview";$("#lt").value="makati";
+$("#lf").value="lifehomes";$("#lt").value="ususan";
 
 $("#lgo").onclick=()=>{
  $("#from").value=P[$("#lf").value];$("#from-val").value=$("#lf").value;
@@ -455,7 +654,7 @@ $("#swap").onclick=()=>{
   $("#to-val").value=a; $("#to").value=aTxt;
   redo();
 };
-$("#dep").onchange=()=>{autoRush();redo()}; // Magre-recalculate agad pagpalit ng oras
+$("#dep").onchange=()=>{autoRush();redo()};
 {const d=new Date();$("#dep").value=pad(d.getHours())+":"+pad(d.getMinutes());autoRush()}
 
 $("#loc").onclick=()=>{const m=$("#msg");if(!navigator.geolocation){m.textContent=T("locNo");return}
@@ -464,5 +663,5 @@ $("#loc").onclick=()=>{const m=$("#msg");if(!navigator.geolocation){m.textConten
   $("#from").value=P[best]; $("#from-val").value=best; m.textContent=T("locNearest")+P[best];render()},()=>{m.textContent=T("locFail")},{timeout:8000})};
 
 $("#cities").innerHTML=CitiesList.map(c=>`<span>${c}</span>`).join("");
-$("#ccount").textContent=SearchData.length+T("people")+CitiesList.length+T("citiesWords");
+$("#ccount").textContent=SearchData.length+T("people")+CitiesList.length+T("citiesWord");
 drawFavs();home();route();applyLang();
