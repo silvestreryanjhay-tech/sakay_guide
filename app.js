@@ -607,26 +607,28 @@ $("#cities").innerHTML=CitiesList.map(c=>`<span>${c}</span>`).join("");
 $("#ccount").textContent=SearchData.length+T("people")+CitiesList.length+T("citiesWord");
 drawFavs();home();route();applyLang();
 
-// ====== SPLASH SCREEN LOADING LOGIC ======
+/* ============ SPLASH SCREEN LOGIC (0-100%) ============ */
 let progress = 0;
 const bar = document.getElementById('load-bar');
 const percentText = document.getElementById('load-percent');
 
-const interval = setInterval(() => {
-  // Random na dagdag para magmukhang natural (5 to 15%)
-  progress += Math.floor(Math.random() * 10) + 5;
-  
-  if (progress >= 100) {
-    progress = 100;
-    clearInterval(interval);
+if (bar && percentText) {
+  const interval = setInterval(() => {
+    // Random na dagdag para magmukhang natural (5 to 15%)
+    progress += Math.floor(Math.random() * 10) + 5;
     
-    // Pag 100%, hintayin ng 200ms bago i-hide
-    setTimeout(() => {
-      document.getElementById('splash').classList.add('hide');
-    }, 200);
-  }
-  
-  // I-update ang width at text
-  bar.style.width = progress + '%';
-  percentText.textContent = progress + '%';
-}, 80); // Mabilis lang: 80ms bawat dagdag
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(interval);
+      
+      // Pag 100%, hintayin ng 200ms bago i-hide ang splash
+      setTimeout(() => {
+        document.getElementById('splash').classList.add('hide');
+      }, 200);
+    }
+    
+    // I-update ang width ng bar at ang text
+    bar.style.width = progress + '%';
+    percentText.textContent = progress + '%';
+  }, 80); // Mabilis lang: 80ms bawat dagdag
+}
