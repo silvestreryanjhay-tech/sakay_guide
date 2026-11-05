@@ -32,99 +32,52 @@ function applyTrafficToRoute(route, departureMinutes) {
 
 /* ============ FULL METRO MANILA DATA ============ */
 const Hubs = [
-// Primary hubs
-["north","SM North EDSA","Quezon City",14.6563,121.0306],
-["cubao","Cubao","Quezon City",14.62,121.053],
-["ortigas","Ortigas Center","Pasig",14.5878,121.0567],
-["makati","Makati (Ayala)","Makati",14.5547,121.0244],
-["taft","Taft Ave","Pasay",14.5378,121.0014],
-["monumento","Caloocan (Monumento)","Caloocan",14.654,120.9838],
-["recto","Recto","Manila",14.6035,120.983],
-["pitx","PITX","Parañaque",14.51,120.991],
-["baclaan","Baclaran","Pasay",14.537,120.997],
-["santolan","Marikina (Santolan)","Marikina",14.6228,121.086],
-["shaw","MRT Shaw Blvd","Mandaluyong",14.581,121.053],
-["boni","MRT Boni Ave","Mandaluyong",14.573,121.048],
-["rtu","RTU Mandaluyong","Mandaluyong",14.568,121.043],
-["lifehomes","Lifehomes Pasig (Rosario)","Pasig",14.580,121.077],
-["parklea","Parklea Mandaluyong","Mandaluyong",14.575,121.045],
-["alabang","Alabang","Muntinlupa",14.42,121.04],
-["divisoria","Divisoria","Manila",14.602,120.974],
-["novaliches","Novaliches (TP)","Quezon City",14.726,121.037],
-["quiapo","Quiapo","Manila",14.598,120.985],
-["blumentritt","Blumentritt","Manila",14.619,120.984],
-["libertad","Libertad","Pasay",14.545,121.010],
-["paco","Paco","Manila",14.579,120.996],
-["pier_south","Pier South","Manila",14.586,120.972],
-["sta_cruz","Sta. Cruz","Manila",14.599,120.980],
-["tm_kalaw","T.M. Kalaw","Manila",14.580,120.981],
-["pasig_tp","Pasig (TP)","Pasig",14.575,121.085],
-["angono","Angono","Rizal",14.525,121.155],
-["antipolo","Antipolo","Rizal",14.585,121.176],
-["taytay","Taytay","Rizal",14.570,121.135],
-["binangonan","Binangonan","Rizal",14.465,121.190],
-["cainta","Cainta","Rizal",14.580,121.120],
-["marikina_tp","Marikina (TP)","Marikina",14.632,121.098],
-["san_mateo","San Mateo","Rizal",14.695,121.120],
-["montalban","Rodriguez (Montalban)","Rizal",14.730,121.145],
-["sucat","Sucat","Parañaque",14.455,121.024],
-["fti","FTI","Taguig",14.520,121.050],
-["nichols","Nichols","Taguig",14.510,121.020],
-["signal_village","Signal Village","Taguig",14.510,121.065],
-["pasay_rtda","Pasay Rotonda","Pasay",14.537,121.001],
-["edsa_shaw","EDSA/Shaw","Mandaluyong",14.581,121.053],
-["edsa_north","EDSA/North Ave.","Quezon City",14.656,121.031],
-["lagro","Lagro","Quezon City",14.740,121.065],
-["fairview","Fairview","Quezon City",14.733,121.058],
-["bagong_silang","Bagong Silang","Caloocan",14.750,121.020],
-["camarin","Camarin","Caloocan",14.746,121.017],
-["malinta","Malinta","Valenzuela",14.700,120.990],
-["karuhatan","Karuhatan","Valenzuela",14.690,120.980],
-["navotas","Navotas","Navotas",14.667,120.942],
-["malabon","Malabon","Malabon",14.6625,120.957],
-["valenzuela","Valenzuela","Valenzuela",14.7011,120.983],
-["pasig_caruncho","Pasig (Caruncho)","Pasig",14.573,121.085],
-["pasig_rosales","Pasig (P. Rosales)","Pasig",14.568,121.082],
-["mandaluyong_cityhall","Mandaluyong City Hall","Mandaluyong",14.579,121.036],
-["one_ayala","One Ayala","Makati",14.553,121.028],
-["makati_sanjose","Makati (San Jose St)","Makati",14.558,121.035],
-["makati_sierramadre","Makati (Sierra Madre)","Makati",14.567,121.042],
-["shaw_crossing","Shaw Crossing","Mandaluyong",14.587,121.058],
-["pasig_ortigas_raymundo","Pasig (C. Raymundo)","Pasig",14.576,121.080],
-["san_juan_ndomingo","San Juan (N. Domingo)","San Juan",14.605,121.035],
-["mandaluyong_mayflower","Mandaluyong (Mayflower)","Mandaluyong",14.578,121.047],
-["pasig_dr_garcia","Pasig (Dr. Garcia)","Pasig",14.571,121.084],
-["pasig_mabini","Pasig (A. Mabini)","Pasig",14.572,121.087],
-["muntinlupa","Muntinlupa","Muntinlupa",14.415,121.040],
-["laspinas","Las Piñas","Las Piñas",14.450,120.993],
-["zapote","Zapote","Las Piñas",14.470,120.980],
-["bacoor","Bacoor","Cavite",14.460,120.940],
-["dasmarinas","Dasmariñas","Cavite",14.330,120.940],
-["gma","GMA","Cavite",14.300,121.000],
-["carmona","Carmona","Cavite",14.310,121.050],
-["binan","Binan","Laguna",14.330,121.080],
-["sta_rosa","Sta. Rosa","Laguna",14.310,121.100],
-["calamba","Calamba","Laguna",14.210,121.170],
-["san_pedro","San Pedro","Laguna",14.360,121.050],
-["pacita","Pacita","Laguna",14.340,121.050],
-["ususan","Ususan (Taguig)","Taguig",14.535,121.068],
-["pasig_palengke","Pasig Palengke","Pasig",14.565,121.085],
-["tagig_tp","Taguig (TP)","Taguig",14.520,121.070],
-["bicutan","Bicutan","Taguig",14.495,121.051],
-["pateros","Pateros","Pateros",14.544,121.069],
-["upper_bicutan","Upper Bicutan","Taguig",14.505,121.060],
-["western_bicutan","Western Bicutan","Taguig",14.515,121.035],
-["lower_bicutan","Lower Bicutan","Taguig",14.500,121.045],
-["fti_taguig","FTI Taguig","Taguig",14.520,121.050],
-["tipas","Tipas (Taguig)","Taguig",14.530,121.075],
-["sangandaan","Sangandaan","Caloocan",14.667,121.007],
-["balintawak","Balintawak","Quezon City",14.657,121.002],
-["bagong_barrio","Bagong Barrio","Caloocan",14.658,120.996],
-["lawang_bato","Lawang Bato","Valenzuela",14.730,120.960],
-["paso_de_blas","Paso de Blas","Valenzuela",14.705,120.980],
-["punturin","Punturin","Valenzuela",14.725,120.990],
-["mapulang_lupa","Mapulang Lupa","Valenzuela",14.690,120.985],
-["bagbaguin","Bagbaguin","Valenzuela",14.710,120.990]
+["north","SM North EDSA","Quezon City",14.6563,121.0306],["cubao","Cubao","Quezon City",14.62,121.053],
+["ortigas","Ortigas Center","Pasig",14.5878,121.0567],["makati","Makati (Ayala)","Makati",14.5547,121.0244],
+["taft","Taft Ave","Pasay",14.5378,121.0014],["monumento","Caloocan (Monumento)","Caloocan",14.654,120.9838],
+["recto","Recto","Manila",14.6035,120.983],["pitx","PITX","Parañaque",14.51,120.991],
+["baclaan","Baclaran","Pasay",14.537,120.997],["santolan","Marikina (Santolan)","Marikina",14.6228,121.086],
+["shaw","MRT Shaw Blvd","Mandaluyong",14.581,121.053],["boni","MRT Boni Ave","Mandaluyong",14.573,121.048],
+["rtu","RTU Mandaluyong","Mandaluyong",14.568,121.043],["lifehomes","Lifehomes Pasig (Rosario)","Pasig",14.580,121.077],
+["parklea","Parklea Mandaluyong","Mandaluyong",14.575,121.045],["alabang","Alabang","Muntinlupa",14.42,121.04],
+["divisoria","Divisoria","Manila",14.602,120.974],["novaliches","Novaliches (TP)","Quezon City",14.726,121.037],
+["quiapo","Quiapo","Manila",14.598,120.985],["blumentritt","Blumentritt","Manila",14.619,120.984],
+["libertad","Libertad","Pasay",14.545,121.010],["paco","Paco","Manila",14.579,120.996],
+["pier_south","Pier South","Manila",14.586,120.972],["sta_cruz","Sta. Cruz","Manila",14.599,120.980],
+["tm_kalaw","T.M. Kalaw","Manila",14.580,120.981],["pasig_tp","Pasig (TP)","Pasig",14.575,121.085],
+["angono","Angono","Rizal",14.525,121.155],["antipolo","Antipolo","Rizal",14.585,121.176],
+["taytay","Taytay","Rizal",14.570,121.135],["binangonan","Binangonan","Rizal",14.465,121.190],
+["cainta","Cainta","Rizal",14.580,121.120],["marikina_tp","Marikina (TP)","Marikina",14.632,121.098],
+["san_mateo","San Mateo","Rizal",14.695,121.120],["montalban","Rodriguez (Montalban)","Rizal",14.730,121.145],
+["sucat","Sucat","Parañaque",14.455,121.024],["fti","FTI","Taguig",14.520,121.050],
+["nichols","Nichols","Taguig",14.510,121.020],["signal_village","Signal Village","Taguig",14.510,121.065],
+["pasay_rtda","Pasay Rotonda","Pasay",14.537,121.001],["edsa_shaw","EDSA/Shaw","Mandaluyong",14.581,121.053],
+["edsa_north","EDSA/North Ave.","Quezon City",14.656,121.031],["lagro","Lagro","Quezon City",14.740,121.065],
+["fairview","Fairview","Quezon City",14.733,121.058],["bagong_silang","Bagong Silang","Caloocan",14.750,121.020],
+["camarin","Camarin","Caloocan",14.746,121.017],["malinta","Malinta","Valenzuela",14.700,120.990],
+["karuhatan","Karuhatan","Valenzuela",14.690,120.980],["navotas","Navotas","Navotas",14.667,120.942],
+["malabon","Malabon","Malabon",14.6625,120.957],["valenzuela","Valenzuela","Valenzuela",14.7011,120.983],
+["pasig_caruncho","Pasig (Caruncho)","Pasig",14.573,121.085],["pasig_rosales","Pasig (P. Rosales)","Pasig",14.568,121.082],
+["mandaluyong_cityhall","Mandaluyong City Hall","Mandaluyong",14.579,121.036],["one_ayala","One Ayala","Makati",14.553,121.028],
+["makati_sanjose","Makati (San Jose St)","Makati",14.558,121.035],["makati_sierramadre","Makati (Sierra Madre)","Makati",14.567,121.042],
+["shaw_crossing","Shaw Crossing","Mandaluyong",14.587,121.058],["pasig_ortigas_raymundo","Pasig (C. Raymundo)","Pasig",14.576,121.080],
+["san_juan_ndomingo","San Juan (N. Domingo)","San Juan",14.605,121.035],["mandaluyong_mayflower","Mandaluyong (Mayflower)","Mandaluyong",14.578,121.047],
+["pasig_dr_garcia","Pasig (Dr. Garcia)","Pasig",14.571,121.084],["pasig_mabini","Pasig (A. Mabini)","Pasig",14.572,121.087],
+["muntinlupa","Muntinlupa","Muntinlupa",14.415,121.040],["laspinas","Las Piñas","Las Piñas",14.450,120.993],
+["zapote","Zapote","Las Piñas",14.470,120.980],["bacoor","Bacoor","Cavite",14.460,120.940],
+["dasmarinas","Dasmariñas","Cavite",14.330,120.940],["gma","GMA","Cavite",14.300,121.000],
+["carmona","Carmona","Cavite",14.310,121.050],["binan","Binan","Laguna",14.330,121.080],
+["sta_rosa","Sta. Rosa","Laguna",14.310,121.100],["calamba","Calamba","Laguna",14.210,121.170],
+["san_pedro","San Pedro","Laguna",14.360,121.050],["pacita","Pacita","Laguna",14.340,121.050],
+["ususan","Ususan (Taguig)","Taguig",14.535,121.068],["pasig_palengke","Pasig Palengke","Pasig",14.565,121.085],
+["tagig_tp","Taguig (TP)","Taguig",14.520,121.070],["bicutan","Bicutan","Taguig",14.495,121.051],
+["pateros","Pateros","Pateros",14.544,121.069],["upper_bicutan","Upper Bicutan","Taguig",14.505,121.060],
+["western_bicutan","Western Bicutan","Taguig",14.515,121.035],["lower_bicutan","Lower Bicutan","Taguig",14.500,121.045],
+["fti_taguig","FTI Taguig","Taguig",14.520,121.050],["tipas","Tipas (Taguig)","Taguig",14.530,121.075],
+["sangandaan","Sangandaan","Caloocan",14.667,121.007],["balintawak","Balintawak","Quezon City",14.657,121.002],
+["bagong_barrio","Bagong Barrio","Caloocan",14.658,120.996],["lawang_bato","Lawang Bato","Valenzuela",14.730,120.960],
+["paso_de_blas","Paso de Blas","Valenzuela",14.705,120.980],["punturin","Punturin","Valenzuela",14.725,120.990],
+["mapulang_lupa","Mapulang Lupa","Valenzuela",14.690,120.985],["bagbaguin","Bagbaguin","Valenzuela",14.710,120.990]
 ];
 
 /* ============ BARANGAYS ============ */
@@ -189,8 +142,6 @@ for(const city in Barangays){
   });
 }
 Hubs.forEach(h=>{ SearchData.push({ id: h[0], name: h[1], city: h[2] }); });
-
-// I-sort alphabetically ang SearchData
 SearchData.sort((a,b)=>a.name.localeCompare(b.name));
 
 const BASE_JEEP = 14, BASE_MODERN = 17, BASE_TRICYCLE = 12;
@@ -210,14 +161,11 @@ bus:{n:"Bus",c:"#5b9bff",i:"🚌"},carousel:{n:"EDSA Carousel",c:"#ff8a3d",i:"�
 mrt3:{n:"MRT-3",c:"#3b82f6",i:"🚆"},lrt1:{n:"LRT-1",c:"#34c77b",i:"🚇"},lrt2:{n:"LRT-2",c:"#b57bff",i:"🚈"}
 };
 
-/* ============ EDGES ============ */
 const E=[
-// RAIL
 ["north","cubao","mrt3",12,20],["cubao","ortigas","mrt3",7,16],["ortigas","makati","mrt3",13,20],["makati","taft","mrt3",10,16],
 ["monumento","recto","lrt1",25,25],["recto","taft","lrt1",20,25],["taft","baclaan","lrt1",5,12],["baclaan","pitx","lrt1",6,12],
 ["recto","cubao","lrt2",22,25],["cubao","santolan","lrt2",15,20],["santolan","marikina","lrt2",12,18],
 ["monumento","north","carousel",15,15],["north","makati","carousel",45,35],["makati","taft","carousel",15,15],["taft","pitx","carousel",25,20],
-// JEEPS...
 ["alabang","baclaan","jeep",18],["alabang","pasay_rtda","jeep",20],["alabang","sucat","jeep",6],["alabang","muntinlupa","jeep",3],["alabang","signal_village","jeep",10],["alabang","fti","jeep",12],["alabang","laspinas","jeep",8],["alabang","zapote","jeep",9],["alabang","binan","jeep",15],["alabang","sta_rosa","jeep",18],["alabang","calamba","jeep",25],["alabang","san_pedro","jeep",12],["alabang","pacita","jeep",10],["alabang","gma","jeep",15],["alabang","carmona","jeep",12],["alabang","dasmarinas","jeep",18],
 ["baclaan","blumentritt","jeep",8],["baclaan","divisoria","jeep",10],["baclaan","sta_cruz","jeep",9],["baclaan","libertad","jeep",4],["baclaan","paco","jeep",7],["baclaan","quiapo","jeep",8],["baclaan","bacoor","jeep",10],["baclaan","zapote","jeep",8],["baclaan","laspinas","jeep",12],["baclaan","sucat","jeep",15],["baclaan","nichols","jeep",6],
 ["cubao","quiapo","jeep",10],["cubao","recto","jeep",12],["cubao","divisoria","jeep",14],["cubao","sta_cruz","jeep",11],["cubao","pier_south","jeep",15],["cubao","tm_kalaw","jeep",14],["cubao","fairview","jeep",12],["cubao","lagro","jeep",15],["cubao","novaliches","jeep",14],["cubao","angono","jeep",12],["cubao","antipolo","jeep",15],["cubao","taytay","jeep",12],["cubao","cainta","jeep",10],["cubao","marikina_tp","jeep",10],["cubao","san_mateo","jeep",12],["cubao","montalban","jeep",15],["cubao","pasig_tp","jeep",12],["cubao","santolan","jeep",6],
@@ -329,12 +277,11 @@ const $=s=>document.querySelector(s);
 let disc=false,rush=false,cur=null,LANG=localStorage.getItem("sg_lang")||"fil";
 const rail=m=>["mrt3","lrt1","lrt2","carousel"].includes(m);
 
-// ====== BAGONG SEARCH LOGIC (Auto-show, focus, enter) ======
-function setupSearch(inputId, resId, hiddenId, defaultText) {
+// ====== BAGONG SEARCH LOGIC ======
+function setupSearch(inputId, resId, hiddenId) {
   const input = $("#"+inputId), res = $("#"+resId), hidden = $("#"+hiddenId);
   let activeIndex = -1;
 
-  // Helper para i-render ang listahan
   const renderList = (query) => {
     res.innerHTML = "";
     activeIndex = -1;
@@ -343,12 +290,10 @@ function setupSearch(inputId, resId, hiddenId, defaultText) {
     const q = query.trim().toLowerCase();
     
     if (q.length > 0) {
-      // Kung may tinatype, hanapin
       matches = SearchData.filter(d => 
         d.name.toLowerCase().includes(q) || d.city.toLowerCase().includes(q)
       ).slice(0, 20);
     } else {
-      // Kung walang tinatype (focus lang), magpakita ng default suggestions
       const defaults = ["lifehomes","ususan","rtu","pasig_palengke","pitx","cubao","baclaan","north"];
       matches = SearchData.filter(d => defaults.includes(d.id));
     }
@@ -375,17 +320,16 @@ function setupSearch(inputId, resId, hiddenId, defaultText) {
     res.classList.add("on");
   };
 
-  // Kapag nag-click or nag-focus sa input
   input.addEventListener("focus", () => {
-    renderList(input.value === defaultText ? "" : input.value);
+    // Kapag nag-focus, kung may value na, piliin lahat para madaling ma-overwrite
+    if (input.value) input.select();
+    renderList(input.value);
   });
 
-  // Kapag nag-type
   input.addEventListener("input", () => {
     renderList(input.value);
   });
 
-  // Keyboard navigation (Arrow keys at Enter)
   input.addEventListener("keydown", (e) => {
     const items = res.querySelectorAll(".search-item");
     if (!items.length || !res.classList.contains("on")) return;
@@ -403,29 +347,27 @@ function setupSearch(inputId, resId, hiddenId, defaultText) {
       if (activeIndex >= 0 && items[activeIndex]) {
         items[activeIndex].click();
       } else if (items.length > 0) {
-        items[0].click(); // Pindutin ang unang item kung walang naka-highlight
+        items[0].click();
       }
     } else if (e.key === "Escape") {
       res.classList.remove("on");
     }
   });
 
-  // Isara ang dropdown kapag pumindot sa labas
   document.addEventListener("click", (e) => {
     if (!input.contains(e.target) && !res.contains(e.target)) {
       res.classList.remove("on");
     }
   });
 
-  // I-set ang initial value
-  input.value = defaultText;
+  // I-setup ang placeholder
+  input.value = "";
+  input.placeholder = LANG === "en" ? "Type to search..." : "Mag-search ng lugar...";
+  hidden.value = ""; // Walang default value
 }
 
-// I-setup ang dalawang input
-setupSearch("from", "from-res", "from-val", "Lifehomes Pasig (Rosario)");
-setupSearch("to", "to-res", "to-val", "Ususan (Taguig)");
-$("#from-val").value = "lifehomes";
-$("#to-val").value = "ususan";
+setupSearch("from", "from-res", "from-val");
+setupSearch("to", "to-res", "to-val");
 
 /* ============ I18N ============ */
 const I18N={
@@ -477,6 +419,11 @@ const T=k=>I18N[LANG][k]||I18N.fil[k]||k;
 function applyLang(){
  document.documentElement.lang=LANG==="en"?"en":"fil";
  document.querySelectorAll(".lang button").forEach(b=>b.classList.toggle("on",b.dataset.lang===LANG));
+ 
+ // Update placeholders
+ $("#from").placeholder = LANG === "en" ? "Type to search..." : "Mag-search ng lugar...";
+ $("#to").placeholder = LANG === "en" ? "Type to search..." : "Mag-search ng lugar...";
+
  $("#t-hero-h1").innerHTML=T("heroH1");$("#t-hero-p").textContent=T("heroP");$("#t-lf").textContent=T("lf");$("#t-lt").textContent=T("lt");
  $("#t-lgo").textContent=T("lgo");$("#t-start").textContent=T("start");$("#t-start2").textContent=T("start2");$("#t-how").textContent=T("how");
  $("#t-s1").textContent=T("s1");$("#t-s1b").textContent=T("s1b");$("#t-s1p").textContent=T("s1p");$("#t-s2").textContent=T("s2");
@@ -486,7 +433,10 @@ function applyLang(){
  $("#t-disc").textContent=T("disc");$("#t-rush").textContent=T("rush");$("#t-loc").textContent=T("loc");$("#t-go").textContent=T("go");$("#t-saved-h").textContent=T("savedH");
  $("#t-fares-h").textContent=T("faresH");$("#t-fare-veh").textContent=T("fareVeh");$("#t-fare-est").textContent=T("fareEst");$("#t-truth").innerHTML=T("truth");
  $("#t-fare-note").textContent=T("fareNote");$("#t-tips-h").textContent=T("tipsH");$("#t-tips").innerHTML=T("tips");$("#t-nav1").textContent=T("nav1");$("#t-nav2").textContent=T("nav2");$("#t-nav3").textContent=T("nav3");
- drawFavs();if($("#results").innerHTML)render();if(searched&&view==="guide"&&curR)openGuideLast();
+ 
+ drawFavs();
+ if($("#results").innerHTML)render();
+ if(searched&&view==="guide"&&curR)openGuideLast();
 }
 let lastGuideIdx=0;function openGuideLast(){if(RS[lastGuideIdx])openGuide(lastGuideIdx)}
 document.querySelectorAll(".lang button").forEach(b=>b.onclick=()=>{LANG=b.dataset.lang;localStorage.setItem("sg_lang",LANG);applyLang()});
@@ -583,6 +533,7 @@ function render(){
  view="list";searched=true;cancelAnimationFrame(raf);$("#formcard").hidden=false;
  const a=$("#from-val").value, b=$("#to-val").value;
  const box=$("#results");ctx={a,b};
+ if(!a || !b){box.innerHTML='<div class="card empty">Pumili muna ng simula at destinasyon.</div>';return}
  if(a===b){box.innerHTML='<div class="card empty">'+T("sameErr")+'</div>';return}
  const depM = t0();
  const rs=find(a,b,depM);
@@ -651,6 +602,10 @@ function drawMap(r){
 const POP=[["lifehomes","ususan"],["lifehomes","rtu"],["monumento","bgc"],["rosario","naia"],["valenzuela","makati"]];
 
 function home(){view="list";searched=false;tapA=null;cancelAnimationFrame(raf);$("#formcard").hidden=false;
+ // Linisin ang input tuwing bubuksan ang home
+ $("#from").value=""; $("#from-val").value="";
+ $("#to").value=""; $("#to-val").value="";
+
  $("#results").innerHTML=`<div class="card"><h2>${T("popular")}</h2><p class="note">${T("popularNote")}</p>${POP.map(([a,b],i)=>`<button class="pop" data-i="${i}"><span>${P[a]}</span><i>→</i><span>${P[b]}</span></button>`).join("")}</div>`;
  document.querySelectorAll(".pop").forEach(x=>x.onclick=()=>{
    const[a,b]=POP[+x.dataset.i];
@@ -663,15 +618,6 @@ function route(){const app=location.hash==="#dashboard";$("#landing").hidden=app
 addEventListener("hashchange",route);
 $("#start").onclick=$("#start2").onclick=()=>{location.hash="dashboard"};
 $("#home").onclick=()=>{location.hash=""};
-$("#lf").innerHTML=`<optgroup label="Search Barangay">${SearchData.map(d=>`<option value="${d.id}">${d.name}, ${d.city}</option>`).join("")}</optgroup>`;
-$("#lt").innerHTML=$("#lf").innerHTML;
-$("#lf").value="lifehomes";$("#lt").value="ususan";
-
-$("#lgo").onclick=()=>{
- $("#from").value=P[$("#lf").value];$("#from-val").value=$("#lf").value;
- $("#to").value=P[$("#lt").value];$("#to-val").value=$("#lt").value;
- pendingGo=true;location.hash="dashboard";
-};
 
 const redo=()=>{if(view==="list"&&searched)render()};
 $("#go").onclick=render;
