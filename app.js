@@ -177,7 +177,6 @@ const M={
 };
 
 const E=[
-// ... (Same edges as before)
 ["north","cubao","mrt3",12,20],["cubao","ortigas","mrt3",7,16],["ortigas","makati","mrt3",13,20],["makati","taft","mrt3",10,16],
 ["monumento","recto","lrt1",25,25],["recto","taft","lrt1",20,25],["taft","baclaan","lrt1",5,12],["baclaan","pitx","lrt1",6,12],
 ["recto","cubao","lrt2",22,25],["cubao","santolan","lrt2",15,20],["santolan","marikina","lrt2",12,18],
@@ -607,3 +606,9 @@ $("#loc").onclick=()=>{const m=$("#msg");if(!navigator.geolocation){m.textConten
 $("#cities").innerHTML=CitiesList.map(c=>`<span>${c}</span>`).join("");
 $("#ccount").textContent=SearchData.length+T("people")+CitiesList.length+T("citiesWord");
 drawFavs();home();route();applyLang();
+
+// ====== SPLASH SCREEN LOGIC ======
+// Mawawala ang splash screen pagkatapos ng 2.5 segundo
+setTimeout(() => {
+  document.getElementById('splash').classList.add('hide');
+}, 2500);
