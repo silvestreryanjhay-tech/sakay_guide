@@ -154,14 +154,30 @@ function calcJeepFare(km, isModern = false) {
 }
 function calcTricycleFare(km) { return BASE_TRICYCLE; }
 
+/* ============ CUSTOM SVG ICONS ============ */
+const iconSvg = {
+  walk: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/><path d="M13 8l-2 5-3 4"/><path d="M13 8l3 4"/><path d="M11 13l-3 6"/></svg>`,
+  jeep: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 12h18"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>`,
+  tricycle: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M6 17h6l4-8h-4"/><path d="M9 9l4 8"/></svg>`,
+  bus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="M8 19l-2 3"/><path d="M16 19l2 3"/></svg>`,
+  carousel: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="3"/><path d="M3 12h18"/><circle cx="8" cy="16" r="1.5" fill="currentColor"/><circle cx="16" cy="16" r="1.5" fill="currentColor"/></svg>`,
+  mrt: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 12h16"/><path d="M8 20l-2 2"/><path d="M16 20l2 2"/></svg>`,
+  lrt: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="16" rx="2"/><path d="M6 11h12"/><path d="M9 19l-2 3"/><path d="M15 19l2 3"/></svg>`
+};
+
 const M={
-walk:{n:"Lakad",c:"#9aa38a",i:"🚶"},jeep:{n:"Jeep",c:"#ffc400",i:"🚐"},
-tricycle:{n:"Tricycle",c:"#a3e635",i:"🛺"},
-bus:{n:"Bus",c:"#5b9bff",i:"🚌"},carousel:{n:"EDSA Carousel",c:"#ff8a3d",i:"🚍"},
-mrt3:{n:"MRT-3",c:"#3b82f6",i:"🚆"},lrt1:{n:"LRT-1",c:"#34c77b",i:"🚇"},lrt2:{n:"LRT-2",c:"#b57bff",i:"🚈"}
+  walk:{n:"Lakad",c:"#9aa38a",i:iconSvg.walk},
+  jeep:{n:"Jeep",c:"#ffc400",i:iconSvg.jeep},
+  tricycle:{n:"Tricycle",c:"#a3e635",i:iconSvg.tricycle},
+  bus:{n:"Bus",c:"#5b9bff",i:iconSvg.bus},
+  carousel:{n:"EDSA Carousel",c:"#ff8a3d",i:iconSvg.carousel},
+  mrt3:{n:"MRT-3",c:"#3b82f6",i:iconSvg.mrt},
+  lrt1:{n:"LRT-1",c:"#34c77b",i:iconSvg.lrt},
+  lrt2:{n:"LRT-2",c:"#b57bff",i:iconSvg.lrt}
 };
 
 const E=[
+// ... (Same edges as before)
 ["north","cubao","mrt3",12,20],["cubao","ortigas","mrt3",7,16],["ortigas","makati","mrt3",13,20],["makati","taft","mrt3",10,16],
 ["monumento","recto","lrt1",25,25],["recto","taft","lrt1",20,25],["taft","baclaan","lrt1",5,12],["baclaan","pitx","lrt1",6,12],
 ["recto","cubao","lrt2",22,25],["cubao","santolan","lrt2",15,20],["santolan","marikina","lrt2",12,18],
@@ -188,58 +204,13 @@ const E=[
 ["lagro","fairview","jeep",3],["lagro","north","jeep",8],["fairview","north","jeep",7],["fairview","cubao","jeep",12],["fairview","novaliches","jeep",6],
 ["boni","rtu","walk",1,0],["boni","parklea","tricycle",1.2],["parklea","rtu","tricycle",1.5],["boni","shaw","mrt3",2,13],["boni","guadalupe","mrt3",2,13],["boni","mandaluyong_cityhall","jeep",3],
 ["pasig_sandoval","shaw","jeep",4.5],["pasig_sandoval","ortigas","jeep",3],["pasig_ortigas_raymundo","shaw_crossing","jeep",6.5],["pasig_ortigas_raymundo","ortigas","jeep",2.5],["pasig_caruncho","shaw_crossing","jeep",5.5],["pasig_caruncho","ortigas","jeep",4],["pasig_rosales","makati_sanjose","jeep",8],["pasig_rosales","pateros","jeep",4],["one_ayala","makati","walk",1,0],
-["lifehomes","pasig_palengke","jeep",3.5],
-["pasig_palengke","ususan","jeep",6],
-["pasig_palengke","pasig_tp","jeep",1.5],
-["pasig_palengke","pasig_caruncho","jeep",2],
-["pasig_palengke","pateros","jeep",5],
-["pasig_palengke","tagig_tp","jeep",6],
-["ususan","tagig_tp","jeep",3],
-["ususan","bicutan","jeep",4],
-["ususan","upper_bicutan","jeep",3],
-["ususan","western_bicutan","jeep",5],
-["ususan","lower_bicutan","jeep",4],
-["ususan","fti_taguig","jeep",5],
-["ususan","tipas","jeep",3],
-["tagig_tp","bicutan","jeep",3],
-["tagig_tp","pateros","jeep",4],
-["tagig_tp","tipas","jeep",3],
-["bicutan","upper_bicutan","jeep",2],
-["bicutan","lower_bicutan","jeep",2],
-["upper_bicutan","western_bicutan","jeep",3],
-["lower_bicutan","western_bicutan","jeep",3],
-["western_bicutan","fti_taguig","jeep",3],
-["tipas","pateros","jeep",2],
-["tipas","pasig_palengke","jeep",4],
-["karuhatan","bagbaguin","jeep",4],
-["karuhatan","mapulang_lupa","jeep",4],
-["karuhatan","paso_de_blas","jeep",5],
-["karuhatan","punturin","jeep",6],
-["karuhatan","lawang_bato","jeep",8],
-["bagbaguin","malinta","jeep",4],
-["bagbaguin","paso_de_blas","jeep",4],
-["punturin","lawang_bato","jeep",3],
-["punturin","paso_de_blas","jeep",3],
-["monumento","sangandaan","jeep",6],
-["sangandaan","bagong_barrio","jeep",4],
-["bagong_barrio","balintawak","jeep",3],
-["balintawak","monumento","jeep",7],
-["sangandaan","divisoria","jeep",9],
-["sta_cruz","libertad","jeep",6],
-["libertad","paco","jeep",5],
-["libertad","tm_kalaw","jeep",6],
-["libertad","pier_south","jeep",7],
-["paco","pier_south","jeep",6],
-["paco","tm_kalaw","jeep",4],
-["mandaluyong_cityhall","pasig_palengke","jeep",8],
-["mandaluyong_cityhall","pasig_caruncho","jeep",7],
-["mandaluyong_mayflower","pasig_caruncho","jeep",7],
-["boni","pasig_caruncho","jeep",8],
-["cubao","mandaluyong_cityhall","jeep",10],
-["cubao","pasig_palengke","jeep",12],
-["bicutan","tagig_tp","jeep",4],
-["bicutan","pateros","jeep",5],
-["fti_taguig","pateros","jeep",5]
+["lifehomes","pasig_palengke","jeep",3.5],["pasig_palengke","ususan","jeep",6],["pasig_palengke","pasig_tp","jeep",1.5],["pasig_palengke","pasig_caruncho","jeep",2],["pasig_palengke","pateros","jeep",5],["pasig_palengke","tagig_tp","jeep",6],
+["ususan","tagig_tp","jeep",3],["ususan","bicutan","jeep",4],["ususan","upper_bicutan","jeep",3],["ususan","western_bicutan","jeep",5],["ususan","lower_bicutan","jeep",4],["ususan","fti_taguig","jeep",5],["ususan","tipas","jeep",3],
+["tagig_tp","bicutan","jeep",3],["tagig_tp","pateros","jeep",4],["tagig_tp","tipas","jeep",3],["bicutan","upper_bicutan","jeep",2],["bicutan","lower_bicutan","jeep",2],["upper_bicutan","western_bicutan","jeep",3],["lower_bicutan","western_bicutan","jeep",3],["western_bicutan","fti_taguig","jeep",3],["tipas","pateros","jeep",2],["tipas","pasig_palengke","jeep",4],
+["karuhatan","bagbaguin","jeep",4],["karuhatan","mapulang_lupa","jeep",4],["karuhatan","paso_de_blas","jeep",5],["karuhatan","punturin","jeep",6],["karuhatan","lawang_bato","jeep",8],["bagbaguin","malinta","jeep",4],["bagbaguin","paso_de_blas","jeep",4],["punturin","lawang_bato","jeep",3],["punturin","paso_de_blas","jeep",3],
+["monumento","sangandaan","jeep",6],["sangandaan","bagong_barrio","jeep",4],["bagong_barrio","balintawak","jeep",3],["balintawak","monumento","jeep",7],["sangandaan","divisoria","jeep",9],
+["sta_cruz","libertad","jeep",6],["libertad","paco","jeep",5],["libertad","tm_kalaw","jeep",6],["libertad","pier_south","jeep",7],["paco","pier_south","jeep",6],["paco","tm_kalaw","jeep",4],
+["mandaluyong_cityhall","pasig_palengke","jeep",8],["mandaluyong_cityhall","pasig_caruncho","jeep",7],["mandaluyong_mayflower","pasig_caruncho","jeep",7],["boni","pasig_caruncho","jeep",8],["cubao","mandaluyong_cityhall","jeep",10],["cubao","pasig_palengke","jeep",12],["bicutan","tagig_tp","jeep",4],["bicutan","pateros","jeep",5],["fti_taguig","pateros","jeep",5]
 ];
 
 E.forEach(e => {
@@ -277,7 +248,6 @@ const $=s=>document.querySelector(s);
 let disc=false,rush=false,cur=null,LANG=localStorage.getItem("sg_lang")||"fil";
 const rail=m=>["mrt3","lrt1","lrt2","carousel"].includes(m);
 
-// ====== BAGONG SEARCH LOGIC (Blangko sa umpisa, drop-down kapag nag-type) ======
 function setupSearch(inputId, resId, hiddenId) {
   const input = $("#"+inputId), res = $("#"+resId), hidden = $("#"+hiddenId);
   let activeIndex = -1;
@@ -321,9 +291,7 @@ function setupSearch(inputId, resId, hiddenId) {
   };
 
   input.addEventListener("focus", () => {
-    // Kapag nag-focus, i-render agad ang default listahan
     renderList(input.value);
-    // I-highlight ang text kung meron, para madaling mapalitan
     if (input.value) input.select();
   });
 
@@ -361,7 +329,6 @@ function setupSearch(inputId, resId, hiddenId) {
     }
   });
 
-  // Siguraduhing walang laman sa simula at may placeholder
   input.value = "";
   input.placeholder = LANG === "en" ? "Search place..." : "Mag-search ng lugar...";
   hidden.value = "";
@@ -373,45 +340,45 @@ setupSearch("to", "to-res", "to-val");
 /* ============ I18N ============ */
 const I18N={
  fil:{
-  heroH1:"Para po! 🚐<br>Saan ka ngayon?",heroP:"Planuhin ang byahe mo sa Metro Manila gamit ang jeep, bus, MRT, LRT at lakad. May malinaw na steps, tantiyang pamasahe at oras.",
+  heroH1:"Para po!<br>Saan ka pupunta?",heroP:"Planuhin ang byahe mo sa Metro Manila gamit ang jeep, bus, MRT, LRT at lakad. May malinaw na steps, tantiyang pamasahe at oras.",
   lf:"Saan ka galing?",lt:"Saan ka pupunta?",lgo:"HANAPIN ANG BYAHE →",start:"Pasok na lang sa dashboard ›",start2:"PASOK SA DASHBOARD →",
   how:"Paano gumagana?",s1:"Step 1",s1b:"Piliin ang simula at destinasyon",s1p:"Pumili ng lugar sa Metro Manila, tapos pindutin ang Hanapin.",
   s2:"Step 2",s2b:"Ihambing ang mga ruta",s2p:"Pinakamabilis, pinakamura, o pinakakaunting transfer. Ikaw ang bahala.",
   s3:"Step 3",s3b:"Sundan ang Biyahe Guide",s3p:"Isa-isang steps na may live na mapa, transfer points at pamasahe.",
   scope:"Sakop ang buong Metro Manila",daily:"Para sa araw-araw na commuter",f1:"Oras at pamasahe",f2:"Transfer points",f3:"Saved na ruta",f4:"Live na mapa",
-  foot:"Estimate lang ang oras at pamasahe. Built-in na datos para sa Metro Manila.",tagline:"Para sa bawat commuter, \"Para po!\" 🚐 Metro Manila",
-  from:"Saan ka galing?",to:"Saan ka pupunta?",dep:"Anong oras aalis?",disc:"🎓 Student / PWD / Senior",rush:"⏰ Rush hour",loc:"📍 Nasaan ako?",go:"HANAPIN ANG BYAHE",
-  savedH:"⭐ Paboritong Ruta",faresH:"💸 Pamasahe Guide",fareVeh:"Sakyan",fareEst:"Tantiya",
+  foot:"Estimate lang ang oras at pamasahe. Built-in na datos para sa Metro Manila.",tagline:"Para sa bawat commuter, \"Para po!\"",
+  from:"Saan ka galing?",to:"Saan ka pupunta?",dep:"Anong oras aalis?",disc:"Student / PWD / Senior",rush:"Rush hour",loc:"Nasaan ako?",go:"HANAPIN ANG BYAHE",
+  savedH:"Paboritong Ruta",faresH:"Pamasahe Guide",fareVeh:"Sakyan",fareEst:"Tantiya",
   truth:"<b>Katotohanan:</b> Ang Jeepney at Tricycle fares ay kinukuwenta base sa official LTFRB formula (base + per km) at sa fixed local rates. I-verify pa rin ang signboard.",
   fareNote:"Estimate lang ito para sa pagpaplano. Iba-iba ang aktuwal na pamasahe depende sa layo at operator.",
-  tipsH:"🎒 Tips ni Kuya Driver",tips:"• Maghanda ng barya at Beep card.<br>• Iwasan ang 7–9 AM at 5–8 PM kung kaya.<br>• Bantayan ang gamit sa siksikan.<br>• Sabihing \"Para po!\" nang maaga.",
+  tipsH:"Commuter Tips",tips:"• Maghanda ng barya at Beep card.<br>• Iwasan ang 7–9 AM at 5–8 PM kung kaya.<br>• Bantayan ang gamit sa siksikan.<br>• Sabihing \"Para po!\" nang maaga.",
   nav1:"Magplano",nav2:"Saved",nav3:"Pamasahe",chooseRoute:"Pumili ng ruta para buksan ang Biyahe Guide.",alis:"Alis",dating:"dating",transfer:"transfer",
   fastest:"Pinakamabilis",cheapest:"Pinakamura",fewest:"Pinakakaunting transfer",via:"Via ",
   prep:"Maghanda sa ",budget:"budget",sakay:"ang sakay mo papuntang",goStation:"Pumasok sa ",station:" station sa ",tapBeep:", i-tap ang Beep card at sumakay papuntang ",
   carousel:"Pumila sa EDSA Carousel stop sa ",sumakayPapuntang:" at sumakay papuntang ",jeepSign:"Humanap ng jeep sa ",jeepSign2:" na may signboard na \"",jeepSign3:"\". Iabot ang bayad at sabihing \"Para po!\" sa ",
   busGet:"Sumakay ng bus papuntang ",busGet2:" sa ",busGet3:". Sabihin sa konduktor kung saan ka bababa.",min:" min",
-  transferWalk:" Bumaba sa ",transferWalk2:" (transfer point) at maglakad ng ~6 min papuntang ",arrived:"Nakarating ka na sa ",arrivedD:"Ingat sa paglakad at sa gamit mo. 🙌",
-  travelTime:"TRAVEL TIME",pamasahe:"PAMASAHE",transferLbl:"TRANSFER",openGM:"Buksan sa Google Maps ↗",mapTitle:"🗺️ Live na Mapa ng Byahe",mapTitleHome:"🗺️ Mapa ng Metro Manila",
+  transferWalk:" Bumaba sa ",transferWalk2:" (transfer point) at maglakad ng ~6 min papuntang ",arrived:"Nakarating ka na sa ",arrivedD:"Ingat sa paglakad at sa gamit mo.",
+  travelTime:"TRAVEL TIME",pamasahe:"PAMASAHE",transferLbl:"TRANSFER",openGM:"Buksan sa Google Maps ↗",mapTitle:"Live na Mapa ng Byahe",mapTitleHome:"Mapa ng Metro Manila",
   popular:"Mga sikat na byahe",popularNote:"Pindutin para subukan agad, o ilagay ang sarili mong biyahe sa itaas.",tapMsg:"Pindutin ang pinagmumulan, tapos ang pupuntahan.",tapFrom:"Galing: ",tapNext:". Piliin na ang pupuntahan.",
-  back:"‹ Mga ruta",save:"☆ I-save",saved:"★ Saved",next:"TAPOS NA ANG STEP ",done:"TAPOS NA! 🎉",step:"Step",sameErr:"Pareho ang pinanggalingan at pupuntahan. Pumili ng ibang lugar. 😅",
-  noRoute:"Wala pang ruta para dito sa ngayon. Subukan ang kalapit na istasyon o terminal. 🚏",emptyFav:"Wala pang naka-save. Hanapin ang ruta at pindutin ang ☆ I-save. 🚏",
+  back:"‹ Mga ruta",save:"I-save",saved:"Saved",next:"Tapos na ang Step ",done:"Tapos na!",step:"Step",sameErr:"Pareho ang pinanggalingan at pupuntahan. Pumili ng ibang lugar.",
+  noRoute:"Wala pang ruta para dito sa ngayon. Subukan ang kalapit na istasyon o terminal.",emptyFav:"Wala pang naka-save. Hanapin ang ruta at pindutin ang I-save.",
   viewBtn:"Tingnan",guideTitle:"Biyahe Guide: ",estimate:"Estimate lang ang oras at pamasahe. Built-in na datos ito para sa Metro Manila, hindi live na galing sa Google Maps.",locSearch:"Hinahanap ang location mo...",locNearest:"Pinakamalapit na lugar sa iyo: ",locFail:"Hindi makuha ang location. Paki-allow ang location permission.",locNo:"Hindi supported ang location sa device na ito.",
-  people:"lugar sa ",citiesWord:" lungsod at bayan — may detalyadong sub-location na ang Pasig, Taguig, Caloocan, Makati at iba pa.",
+  people:"lugar sa ",citiesWord:" lungsod at bayan.",
   trafficHigh:"Mabigat ang traffic sa oras na ito (×1.55).",trafficMid:"Katamtaman ang traffic (×1.25).",trafficLow:"Magaan ang traffic (×0.9).",trafficLabel:"Traffic factor"
  },
  en:{
-  heroH1:"Beep beep! 🚐<br>Where are you now?",heroP:"Plan your Metro Manila commute using jeepneys, buses, MRT, LRT and walking. Clear steps, estimated fare and time.",
+  heroH1:"Beep beep!<br>Where to?",heroP:"Plan your Metro Manila commute using jeepneys, buses, MRT, LRT and walking. Clear steps, estimated fare and time.",
   lf:"Where are you from?",lt:"Where are you going?",lgo:"FIND MY ROUTE →",start:"Go to dashboard ›",start2:"ENTER DASHBOARD →",how:"How it works",s1:"Step 1",s1b:"Pick start and destination",s1p:"Choose a place in Metro Manila, then tap Find.",s2:"Step 2",s2b:"Compare routes",s2p:"Fastest, cheapest, or fewest transfers. You decide.",
   s3:"Step 3",s3b:"Follow the Trip Guide",s3p:"Step-by-step with live map, transfer points and fare.",scope:"Covers all of Metro Manila",daily:"For the everyday commuter",f1:"Time and fare",f2:"Transfer points",f3:"Saved routes",f4:"Live map",
-  foot:"Time and fare are estimates. Built-in data for Metro Manila.",tagline:"For every commuter, \"Para po!\" 🚐 Metro Manila",from:"Where are you from?",to:"Where are you going?",dep:"What time do you leave?",disc:"🎓 Student / PWD / Senior",rush:"⏰ Rush hour",loc:"📍 Where am I?",go:"FIND MY ROUTE",
-  savedH:"⭐ Favorite Routes",faresH:"💸 Fare Guide",fareVeh:"Ride",fareEst:"Estimate",truth:"<b>Fact:</b> Jeepney and Tricycle fares are calculated using the LTFRB formula (base + per km) and fixed local rates. Verify the signboard.",fareNote:"These are planning estimates. Actual fares vary by distance and operator.",tipsH:"🎒 Kuya Driver Tips",tips:"• Prepare coins and a Beep card.<br>• Avoid 7–9 AM and 5–8 PM if you can.<br>• Watch your belongings in crowded rides.<br>• Say \"Para po!\" early.",
+  foot:"Time and fare are estimates. Built-in data for Metro Manila.",tagline:"For every commuter, \"Para po!\"",from:"Where are you from?",to:"Where are you going?",dep:"What time do you leave?",disc:"Student / PWD / Senior",rush:"Rush hour",loc:"Where am I?",go:"FIND MY ROUTE",
+  savedH:"Favorite Routes",faresH:"Fare Guide",fareVeh:"Ride",fareEst:"Estimate",truth:"<b>Fact:</b> Jeepney and Tricycle fares are calculated using the LTFRB formula (base + per km) and fixed local rates. Verify the signboard.",fareNote:"These are planning estimates. Actual fares vary by distance and operator.",tipsH:"Commuter Tips",tips:"• Prepare coins and a Beep card.<br>• Avoid 7–9 AM and 5–8 PM if you can.<br>• Watch your belongings in crowded rides.<br>• Say \"Para po!\" early.",
   nav1:"Plan",nav2:"Saved",nav3:"Fares",chooseRoute:"Choose a route to open the Trip Guide.",alis:"Leave",dating:"arrive",transfer:"transfer",fastest:"Fastest",cheapest:"Cheapest",fewest:"Fewest transfers",via:"Via ",
   prep:"Get ready at ",budget:"budget",sakay:"rides to reach",goStation:"Enter ",station:" station at ",tapBeep:", tap your Beep card and ride toward ",carousel:"Line up at the EDSA Carousel stop at ",sumakayPapuntang:" and ride toward ",
-  jeepSign:"Look for a jeepney at ",jeepSign2:" with signboard \"",jeepSign3:"\". Pay and say \"Para po!\" at ",busGet:"Ride a bus to ",busGet2:" from ",busGet3:". Tell the conductor where to drop you.",min:" min",transferWalk:" Get off at ",transferWalk2:" (transfer point) and walk ~6 min to ",arrived:"You have arrived at ",arrivedD:"Stay safe and watch your belongings. 🙌",
-  travelTime:"TRAVEL TIME",pamasahe:"FARE",transferLbl:"TRANSFER",openGM:"Open in Google Maps ↗",mapTitle:"🗺️ Live Trip Map",mapTitleHome:"🗺️ Metro Manila Map",popular:"Popular routes",popularNote:"Tap to try instantly, or enter your own trip above.",tapMsg:"Tap the origin, then the destination.",tapFrom:"From: ",tapNext:". Now pick the destination.",
-  back:"‹ Routes",save:"☆ Save",saved:"★ Saved",next:"STEP DONE ",done:"ALL DONE! 🎉",step:"Step",sameErr:"Start and destination are the same. Pick a different place. 😅",noRoute:"No route found yet. Try a nearby station or terminal. 🚏",emptyFav:"Nothing saved yet. Find a route and tap ☆ Save. 🚏",
+  jeepSign:"Look for a jeepney at ",jeepSign2:" with signboard \"",jeepSign3:"\". Pay and say \"Para po!\" at ",busGet:"Ride a bus to ",busGet2:" from ",busGet3:". Tell the conductor where to drop you.",min:" min",transferWalk:" Get off at ",transferWalk2:" (transfer point) and walk ~6 min to ",arrived:"You have arrived at ",arrivedD:"Stay safe and watch your belongings.",
+  travelTime:"TRAVEL TIME",pamasahe:"FARE",transferLbl:"TRANSFER",openGM:"Open in Google Maps ↗",mapTitle:"Live Trip Map",mapTitleHome:"Metro Manila Map",popular:"Popular routes",popularNote:"Tap to try instantly, or enter your own trip above.",tapMsg:"Tap the origin, then the destination.",tapFrom:"From: ",tapNext:". Now pick the destination.",
+  back:"‹ Routes",save:"Save",saved:"Saved",next:"Step Done ",done:"All Done!",step:"Step",sameErr:"Start and destination are the same. Pick a different place.",noRoute:"No route found yet. Try a nearby station or terminal.",emptyFav:"Nothing saved yet. Find a route and tap Save.",
   viewBtn:"View",guideTitle:"Trip Guide: ",estimate:"Time and fare are estimates. Built-in data for Metro Manila, not live from Google Maps.",locSearch:"Finding your location...",locNearest:"Nearest place to you: ",locFail:"Cannot get location. Please allow location permission.",locNo:"Location not supported on this device.",
-  people:" places across ",citiesWord:" cities and municipalities — Pasig, Taguig, Caloocan, Makati and more now have detailed sub-locations.",
+  people:" places across ",citiesWord:" cities and municipalities.",
   trafficHigh:"Heavy traffic at this hour (×1.55).",trafficMid:"Moderate traffic (×1.25).",trafficLow:"Light traffic (×0.9).",trafficLabel:"Traffic factor"
  }
 };
@@ -550,7 +517,7 @@ const dirOf=l=>{const o=ORD[l.m];if(!o)return P[l.to];return ENDS[l.m][o.indexOf
 
 function stepsFor(r,a,b,depM){
  const total=r.legs.reduce((s,l)=>s+l.min,0)+6*r.x,f=total?r.min/total:1;let t=depM;
- const S=[{i:"🎒",c:"#ffc400",n:a,at:t,t:`${T("prep")}${P[a]}`,d:`${T("alis")} ${fmt(t)}. ${LANG==="en"?"Prepare coins or Beep card":"Ihanda ang barya o Beep card"} (${T("budget")} ₱${r.fare}). ${r.legs.length} ${T("sakay")} ${P[b]}.`}];
+ const S=[{i:iconSvg.bus,c:"#ffc400",n:a,at:t,t:`${T("prep")}${P[a]}`,d:`${T("alis")} ${fmt(t)}. ${LANG==="en"?"Prepare coins or Beep card":"Ihanda ang barya o Beep card"} (${T("budget")} ₱${r.fare}). ${r.legs.length} ${T("sakay")} ${P[b]}.`}];
  r.legs.forEach((l,k)=>{
   const m=M[l.m],nx=r.legs[k+1],dur=Math.round(l.min*f);
   let how;
@@ -566,7 +533,7 @@ function stepsFor(r,a,b,depM){
   t+=dur+(nx?Math.round(6*f):0)
  });
  arrive=t;
- S.push({i:"📍",c:"#d62828",n:b,at:t,t:`${T("arrived")}${P[b]}!`,d:T("arrivedD")});
+ S.push({i:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,c:"#d62828",n:b,at:t,t:`${T("arrived")}${P[b]}!`,d:T("arrivedD")});
  return S;
 }
 
@@ -575,7 +542,7 @@ function openGuide(i){
  const L=[];r.path.forEach((s,k)=>{const m=s.e[2],z=L[L.length-1];if(z&&z.m===m&&rail(m))z.k.push(k);else L.push({m,k:[k]})});legK=L.map(z=>z.k);
  const depM = t0();
  gsteps=stepsFor(r,a,b,depM);const on=getF().includes(key(a,b));
- $("#results").innerHTML=`<div class="gtop"><button class="fav" id="back">${T("back")}</button><button class="fav ${on?"on":""}" id="fav">${on?T("saved"):T("save")}</button></div><h2>${T("guideTitle")}${P[a]} → ${P[b]}</h2><div>${tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div><p class="eta">🕒 ${T("alis")} ${fmt(depM)} → ${T("dating")} ~${fmt(arrive)}</p><div class="sum"><div><b>${hm(r.min)}</b><span>${T("travelTime")}</span></div><div><b>₱${r.fare}</b><span>${T("pamasahe")}</span></div><div><b>${r.x}</b><span>${T("transferLbl")}</span></div></div><div class="card" id="mapcard" style="padding:0;overflow:hidden"></div><div class="card"><div class="prog"><i id="pg"></i></div><ol class="gs" id="gs"></ol></div><div class="gnav"><button class="fav" id="prev" aria-label="Previous step">‹</button><button class="go" id="nx"></button></div>`;
+ $("#results").innerHTML=`<div class="gtop"><button class="fav" id="back">${T("back")}</button><button class="fav ${on?"on":""}" id="fav">${on?T("saved"):T("save")}</button></div><h2>${T("guideTitle")}${P[a]} → ${P[b]}</h2><div>${tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div><p class="eta">${T("alis")} ${fmt(depM)} → ${T("dating")} ~${fmt(arrive)}</p><div class="sum"><div><b>${hm(r.min)}</b><span>${T("travelTime")}</span></div><div><b>₱${r.fare}</b><span>${T("pamasahe")}</span></div><div><b>${r.x}</b><span>${T("transferLbl")}</span></div></div><div class="card" id="mapcard" style="padding:0;overflow:hidden"></div><div class="card"><div class="prog"><i id="pg"></i></div><ol class="gs" id="gs"></ol></div><div class="gnav"><button class="fav" id="prev" aria-label="Previous step">‹</button><button class="go" id="nx"></button></div>`;
  drawMap(r);paint();scrollTo(0,0);
  $("#back").onclick=()=>{render();scrollTo(0,0)};
  $("#fav").onclick=e=>{const k=key(a,b);let f=getF();f=f.includes(k)?f.filter(x=>x!==k):[k,...f];mem=f;saveFavs(f);drawFavs();const o=f.includes(k);e.target.className="fav"+(o?" on":"");e.target.textContent=o?T("saved"):T("save")};
@@ -602,7 +569,6 @@ function drawMap(r){
 const POP=[["lifehomes","ususan"],["lifehomes","rtu"],["monumento","bgc"],["rosario","naia"],["valenzuela","makati"]];
 
 function home(){view="list";searched=false;tapA=null;cancelAnimationFrame(raf);$("#formcard").hidden=false;
- // Linisin ang input tuwing bubuksan ang home para blangko
  $("#from").value=""; $("#from-val").value="";
  $("#to").value=""; $("#to-val").value="";
 
