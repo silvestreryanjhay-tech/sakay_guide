@@ -9,6 +9,34 @@
 </head>
 <body>
 
+<!-- SPLASH SCREEN ANIMATION -->
+<div id="splash">
+  <div class="splash-bg"></div>
+  <div class="splash-content">
+    <div class="splash-logo"><span class="sign">SAKAY</span>Guide</div>
+    <div class="splash-track">
+      <div class="splash-jeep">
+        <svg viewBox="0 0 64 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Jeep Body -->
+          <rect x="4" y="6" width="56" height="16" rx="4" fill="#d62828" stroke="#1d1a14" stroke-width="3"/>
+          <path d="M8 22h48" stroke="#1d1a14" stroke-width="3"/>
+          <!-- Windows -->
+          <rect x="40" y="9" width="14" height="8" rx="2" fill="#ffc400" stroke="#1d1a14" stroke-width="2"/>
+          <rect x="24" y="9" width="12" height="8" rx="2" fill="#ffc400" stroke="#1d1a14" stroke-width="2"/>
+          <rect x="10" y="9" width="10" height="8" rx="2" fill="#ffc400" stroke="#1d1a14" stroke-width="2"/>
+          <!-- Wheels -->
+          <circle cx="16" cy="24" r="5" fill="#1d1a14"/>
+          <circle cx="16" cy="24" r="2" fill="#6d6657"/>
+          <circle cx="48" cy="24" r="5" fill="#1d1a14"/>
+          <circle cx="48" cy="24" r="2" fill="#6d6657"/>
+        </svg>
+      </div>
+      <div class="splash-road"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ACTUAL APP -->
 <div id="landing">
 <section class="hero"><div class="wrap" style="position:relative">
  <div class="lang" role="group" aria-label="Language">
@@ -24,7 +52,10 @@
    <button class="go" id="lgo" style="margin-top:20px"><span id="t-lgo">HANAPIN ANG BYAHE →</span></button>
  </div>
  <button class="lnk" id="start"><span id="t-start">Pasok na lang sa dashboard ›</span></button>
-</div><div class="road"><span></span></div></section>
+</div>
+<!-- ITO YUNG ROAD ANIMATION -->
+<div class="road"><div class="jeep-anim"></div></div>
+</section>
 
 <section class="wrap lp">
  <div class="section-title">
