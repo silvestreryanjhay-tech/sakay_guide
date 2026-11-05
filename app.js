@@ -277,7 +277,7 @@ const $=s=>document.querySelector(s);
 let disc=false,rush=false,cur=null,LANG=localStorage.getItem("sg_lang")||"fil";
 const rail=m=>["mrt3","lrt1","lrt2","carousel"].includes(m);
 
-// ====== BAGONG SEARCH LOGIC ======
+// ====== BAGONG SEARCH LOGIC (Blangko sa umpisa, drop-down kapag nag-type) ======
 function setupSearch(inputId, resId, hiddenId) {
   const input = $("#"+inputId), res = $("#"+resId), hidden = $("#"+hiddenId);
   let activeIndex = -1;
@@ -321,9 +321,10 @@ function setupSearch(inputId, resId, hiddenId) {
   };
 
   input.addEventListener("focus", () => {
-    // Kapag nag-focus, kung may value na, piliin lahat para madaling ma-overwrite
-    if (input.value) input.select();
+    // Kapag nag-focus, i-render agad ang default listahan
     renderList(input.value);
+    // I-highlight ang text kung meron, para madaling mapalitan
+    if (input.value) input.select();
   });
 
   input.addEventListener("input", () => {
@@ -360,10 +361,10 @@ function setupSearch(inputId, resId, hiddenId) {
     }
   });
 
-  // I-setup ang placeholder
+  // Siguraduhing walang laman sa simula at may placeholder
   input.value = "";
-  input.placeholder = LANG === "en" ? "Type to search..." : "Mag-search ng lugar...";
-  hidden.value = ""; // Walang default value
+  input.placeholder = LANG === "en" ? "Search place..." : "Mag-search ng lugar...";
+  hidden.value = "";
 }
 
 setupSearch("from", "from-res", "from-val");
@@ -420,9 +421,8 @@ function applyLang(){
  document.documentElement.lang=LANG==="en"?"en":"fil";
  document.querySelectorAll(".lang button").forEach(b=>b.classList.toggle("on",b.dataset.lang===LANG));
  
- // Update placeholders
- $("#from").placeholder = LANG === "en" ? "Type to search..." : "Mag-search ng lugar...";
- $("#to").placeholder = LANG === "en" ? "Type to search..." : "Mag-search ng lugar...";
+ $("#from").placeholder = LANG === "en" ? "Search place..." : "Mag-search ng lugar...";
+ $("#to").placeholder = LANG === "en" ? "Search place..." : "Mag-search ng lugar...";
 
  $("#t-hero-h1").innerHTML=T("heroH1");$("#t-hero-p").textContent=T("heroP");$("#t-lf").textContent=T("lf");$("#t-lt").textContent=T("lt");
  $("#t-lgo").textContent=T("lgo");$("#t-start").textContent=T("start");$("#t-start2").textContent=T("start2");$("#t-how").textContent=T("how");
@@ -602,7 +602,7 @@ function drawMap(r){
 const POP=[["lifehomes","ususan"],["lifehomes","rtu"],["monumento","bgc"],["rosario","naia"],["valenzuela","makati"]];
 
 function home(){view="list";searched=false;tapA=null;cancelAnimationFrame(raf);$("#formcard").hidden=false;
- // Linisin ang input tuwing bubuksan ang home
+ // Linisin ang input tuwing bubuksan ang home para blangko
  $("#from").value=""; $("#from-val").value="";
  $("#to").value=""; $("#to-val").value="";
 
