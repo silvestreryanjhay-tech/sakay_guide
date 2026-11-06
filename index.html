@@ -168,6 +168,29 @@
  </button>
 </nav></div>
 
+<!-- ITO ANG SECRET: SPLASH SCRIPT DAPAT BAGO ANG APP.JS -->
+<script>
+  let progress = 0;
+  const bar = document.getElementById('load-bar');
+  const percentText = document.getElementById('load-percent');
+
+  const interval = setInterval(() => {
+    // Dagdag ng 10% hanggang 20% kada 80ms
+    progress += Math.floor(Math.random() * 10) + 10;
+    
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(interval);
+      setTimeout(() => {
+        document.getElementById('splash').classList.add('hide');
+      }, 200);
+    }
+    
+    if (bar) bar.style.width = progress + '%';
+    if (percentText) percentText.textContent = progress + '%';
+  }, 80);
+</script>
+
 <script src="app.js"></script>
 </body>
 </html>
